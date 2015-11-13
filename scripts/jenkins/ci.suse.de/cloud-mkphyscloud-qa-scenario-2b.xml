@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>This job will redeploy the qa2.cloud - it will wipe all machines.</description>
+  <description>This job will redeploy the qa2.cloud with scenario-2b:&#13;
+ - total 7 nodes&#13;
+ - database: default, postgresql&#13;
+ - pacemaker: 1 cluster with 3 controllers&#13;
+ - nova: ssl, libvirt migration enabled, shared storage, kvm kernel samepage merging, 2 kvm and 2 ESXi compute nodes&#13;
+ - cinder: vmware&#13;
+ - neutron: vmware (but currently ovs as NSX plugin is kind of out of order)&#13;
+ - eveyrthing with SSL.&#13;
+&#13;
+Warning:&#13;
+It will wipe all machines!</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -33,22 +43,6 @@
           <defaultValue>1</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>libvirt_type</name>
-          <description>possible values: kvm, xen, hyperv, [ lxc, qemu ]</description>
-          <defaultValue>kvm</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>networkingplugin</name>
-          <description>neutron networking plugin: openvswitch|linuxbridge
-Default: openvswitch</description>
-          <defaultValue>openvswitch</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>networkingmode</name>
-          <description>gre|vlan|vxlan</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>cct_tests</name>
           <description>Run cct</description>
           <defaultValue>features:base</defaultValue>
@@ -66,12 +60,12 @@ Default: openvswitch</description>
         <hudson.model.StringParameterDefinition>
           <name>hacloud</name>
           <description>By default we don't want HA configured and installed</description>
-          <defaultValue/>
+          <defaultValue>1</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>clusterconfig</name>
           <description>HA configuration for clusters. Make sense only if ha=1</description>
-          <defaultValue/>
+          <defaultValue>services=3</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>nodenumber</name>
@@ -91,23 +85,13 @@ Default: openvswitch</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal testsetup run_cct</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate setup_aliases waitcloud </defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>WITHREBOOT</name>
-          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-        <hudson.model.TextParameterDefinition>
-          <name>UPDATEREPOS</name>
-          <description>Update repositories (one URL per line)</description>
-          <defaultValue/>
-        </hudson.model.TextParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>UPDATEBEFOREINSTALL</name>
-          <description>add update repos before crowbar install</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_url</name>
+          <description>Location of scenario YML file</description>
+          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/scenario-2b/scripts/scenarios/cloud6/qa-scenario-2b-sbd-kvm-vmware.yaml</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
@@ -128,6 +112,8 @@ Default: openvswitch</description>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
 tempestoptions="-t -s"
+vcenter_user="Administrator@vsphere.qa.suse.de"
+vcenter_password="O!dHacker5"
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
@@ -135,14 +121,18 @@ if [ ! -z "$UPDATEREPOS" ] ; then
   export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
 fi
 
+
 export artifacts_dir=$WORKSPACE/.artifacts
 rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
-cd /home/jenkins
+
 freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
+# wipe out shared NFS that should be used by this deployment
+
+ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa2"
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
@@ -155,23 +145,95 @@ export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
 export TESTHEAD=$TESTHEAD ;
 export cloudsource=$cloudsource ; 
-export libvirt_type=$libvirt_type ; 
 export nodenumber=$nodenumber ; 
 export hacloud=$hacloud ; 
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
+export scenario_url=$scenario_url ; 
+export want_node_aliases=controller=3,computekvm=2,computevmw=1 ;
+export want_node_roles=controller=3,compute=4 ;
+export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'
- 
+
+
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
+wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
 ' || ret=$?
 
+echo "mkphyscloud ret=$ret (before scenario)"
+
+# FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (because they could be called only after the deployment, which is bellow)
+
+if [ "$ret" = "0" ]; then
+
+  # ----- Prepare the SBD setup:
+  
+  cat &gt; /tmp/sbd_prepare_$admin &lt;&lt;EOSCRIPT
+  
+# preparation of iSCSI
+zypper --gpg-auto-import-keys -p http://download.opensuse.org/repositories/devel:/languages:/python/SLE_12/ --non-interactive install python-sh
+
+wget --no-check-certificate https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/iscsictl.py
+
+chmod +x iscsictl.py
+
+./iscsictl.py --service target --host \$(hostname)
+
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller1
+
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller2
+
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller3
+
+
+# preparation of SBD
+SBD_DEV=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+
+ssh controller1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV create"
+
+ssh controller2 "zypper --non-interactive install sbd"
+
+ssh controller3 "zypper --non-interactive install sbd"
+
+# watchdog configuration
+ssh controller1 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
+
+ssh controller2 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
+
+ssh controller3 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
+
+# take scenario yaml file and replace placeholders with right things:
+
+sed -i "s|@@sbd_device@@|\${SBD_DEV}|g" scenario.yml
+sed -i "s|@@vcenter_user@@|\${vcenter_user}|g" scenario.yml
+sed -i "s|@@vcenter_password@@|\${vcenter_password}|g" scenario.yml
+
+# ----- End of SBD
+EOSCRIPT
+
+  chmod +x /tmp/sbd_prepare_$admin
+  
+  scp /tmp/sbd_prepare_$admin root@$admin:sbd_prepare
+  
+
+  ssh root@$admin './sbd_prepare
+  
+  crowbar_batch --timeout 2400 build scenario.yml' || ret=$?
+
 echo "mkphyscloud ret=$ret"
+
+fi
+
 exit $ret
+
+
+
+
 </command>
     </hudson.tasks.Shell>
   </builders>
@@ -193,7 +255,7 @@ exit $ret
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="networkingplugin"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>

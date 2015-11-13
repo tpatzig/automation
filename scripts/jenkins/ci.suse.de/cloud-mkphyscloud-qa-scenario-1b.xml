@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>This job will redeploy the qa2.cloud - it will wipe all machines.</description>
+  <description>This job will redeploy the qa3.cloud with scenario-1b:&#13;
+ - 7 nodes&#13;
+ - HA with IPMI (3 controllers&#13;
+ - shared device for DB and rabbit &#13;
+ - swift&#13;
+ - 2 kvm and 2 xen compute nodes&#13;
+ - eveyrthing with SSL.&#13;
+&#13;
+It will wipe all QA3 machines!</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -22,6 +30,21 @@
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>WITHREBOOT</name>
+          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>UPDATEREPOS</name>
+          <description>Update repositories (one URL per line)</description>
+          <defaultValue/>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>UPDATEBEFOREINSTALL</name>
+          <description>add update repos before crowbar install</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
@@ -31,22 +54,6 @@
           <name>TESTHEAD</name>
           <description>if non-empty, test latest version from Devel:Cloud Staging</description>
           <defaultValue>1</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>libvirt_type</name>
-          <description>possible values: kvm, xen, hyperv, [ lxc, qemu ]</description>
-          <defaultValue>kvm</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>networkingplugin</name>
-          <description>neutron networking plugin: openvswitch|linuxbridge
-Default: openvswitch</description>
-          <defaultValue>openvswitch</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>networkingmode</name>
-          <description>gre|vlan|vxlan</description>
-          <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_tests</name>
@@ -61,17 +68,17 @@ Default: openvswitch</description>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
           <description>Name of the  QA cloud server (we have 2,3,4)</description>
-          <defaultValue>2</defaultValue>
+          <defaultValue>3</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hacloud</name>
           <description>By default we don't want HA configured and installed</description>
-          <defaultValue/>
+          <defaultValue>1</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>clusterconfig</name>
           <description>HA configuration for clusters. Make sense only if ha=1</description>
-          <defaultValue/>
+          <defaultValue>services=3</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>nodenumber</name>
@@ -91,23 +98,13 @@ Default: openvswitch</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal testsetup run_cct</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup run_cct</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>WITHREBOOT</name>
-          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-        <hudson.model.TextParameterDefinition>
-          <name>UPDATEREPOS</name>
-          <description>Update repositories (one URL per line)</description>
-          <defaultValue/>
-        </hudson.model.TextParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>UPDATEBEFOREINSTALL</name>
-          <description>add update repos before crowbar install</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_url</name>
+          <description>Location of scenario YML file</description>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-1b-ipmi-kvm-xen.yaml</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
@@ -143,6 +140,10 @@ cd /home/jenkins
 freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
+# wipe out shared NFS that should be used by this deployment
+
+ssh root@10.162.26.129 "/var/qa-scripts/wipe_qa3_share.sh"
+
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
@@ -155,20 +156,25 @@ export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
 export TESTHEAD=$TESTHEAD ;
 export cloudsource=$cloudsource ; 
-export libvirt_type=$libvirt_type ; 
 export nodenumber=$nodenumber ; 
 export hacloud=$hacloud ; 
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
+export scenario_url=$scenario_url ; 
+export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
+export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'
+
  
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
+wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
 timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
 ' || ret=$?
+
 
 echo "mkphyscloud ret=$ret"
 exit $ret
@@ -193,7 +199,7 @@ exit $ret
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="networkingplugin"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
