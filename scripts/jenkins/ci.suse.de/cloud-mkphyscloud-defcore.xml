@@ -95,6 +95,11 @@ It will wipe all QA3 machines!</description>
           <description>Location of the current list of defcore tests</description>
           <defaultValue>https://raw.githubusercontent.com/openstack/defcore/master/2015.07/2015.07.required.txt</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description>Will run tempest</description>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
@@ -151,7 +156,6 @@ export commands=\"$commands\" "'
 
  
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
-wget --no-check-certificate -O /var/lib/openstack-tempest-test/defcore.txt "$defcore_url"
 
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
