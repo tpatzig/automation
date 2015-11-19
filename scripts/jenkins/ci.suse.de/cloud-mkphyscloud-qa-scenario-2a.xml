@@ -201,12 +201,12 @@ SBD_DEV=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | 
 ssh controller1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV create"
 ssh controller2 "zypper --non-interactive install sbd"
 
-SBD_DEV=\$(ssh data1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
-ssh data1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV create"
+#SBD_DEV=\$(ssh data1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+ssh data1 "zypper --non-interactive install sbd"
 ssh data2 "zypper --non-interactive install sbd"
 
-SBD_DEV=\$(ssh network1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
-ssh network1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV create"
+#SBD_DEV=\$(ssh network1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+ssh network1 "zypper --non-interactive install sbd"
 ssh network2 "zypper --non-interactive install sbd"
 
 # watchdog configuration
