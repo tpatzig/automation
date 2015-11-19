@@ -86,11 +86,6 @@ It will wipe all QA3 machines!</description>
           <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>tempestoptions</name>
-          <description>Run only the tests that are in the file.</description>
-          <defaultValue>-- --load-list defcore.txt</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>defcore_url</name>
           <description>Location of the current list of defcore tests</description>
           <defaultValue>https://raw.githubusercontent.com/openstack/defcore/master/2015.07/2015.07.required.txt</defaultValue>
@@ -150,6 +145,7 @@ export cloudsource=$cloudsource ;
 export nodenumber=$nodenumber ; 
 export hacloud=$hacloud ; 
 export tempestoptions=$tempestoptions ;
+export defcore_url=$defcore_url ;
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
 export commands=\"$commands\" "'
