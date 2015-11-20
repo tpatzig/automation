@@ -196,18 +196,26 @@ chmod +x iscsictl.py
 ./iscsictl.py --service initiator --target_host \$(hostname) --host network2
 
 
-# preparation of SBD
-SBD_DEV=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
-ssh controller1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV create"
+# preparation of SBD for services nodes
+SBD_DEV_SERVICES=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+ssh controller1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV_SERVICES create"
 ssh controller2 "zypper --non-interactive install sbd"
+# take scenario yaml file and replace placeholders
+sed -i "s|@@sbd_device_services@@|\${SBD_DEV_SERVICES}|g" scenario.yml
 
-#SBD_DEV=\$(ssh data1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
-ssh data1 "zypper --non-interactive install sbd"
+# preparation of SBD for data nodes
+SBD_DEV_DATA=\$(ssh data1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+ssh data1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV_DATA create"
 ssh data2 "zypper --non-interactive install sbd"
+# take scenario yaml file and replace placeholders
+sed -i "s|@@sbd_device_data@@|\${SBD_DEV_DATA}|g" scenario.yml
 
-#SBD_DEV=\$(ssh network1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
-ssh network1 "zypper --non-interactive install sbd"
+# preparation of SBD for network nodes
+SBD_DEV_NETWORK=\$(ssh network1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
+ssh network1 "zypper --non-interactive install sbd; sbd -d \$SBD_DEV_NETWORK create"
 ssh network2 "zypper --non-interactive install sbd"
+# take scenario yaml file and replace placeholders
+sed -i "s|@@sbd_device_network@@|\${SBD_DEV_NETWORK}|g" scenario.yml
 
 # watchdog configuration
 ssh controller1 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
@@ -218,10 +226,6 @@ ssh data2 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
 
 ssh network1 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
 ssh network2 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
-
-# take scenario yaml file and replace placeholders with right things:
-
-sed -i "s|@@sbd_device@@|\${SBD_DEV}|g" scenario.yml
 
 
 # ----- End of SBD
