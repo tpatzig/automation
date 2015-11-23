@@ -11,7 +11,7 @@
  - nova: ssl, libvirt migration enabled, shared storage, kvm kernel samepage merging, 1 KVM&#13;
  - cinder: Local file&#13;
  - neutron: linuxbridge&#13;
- - eveyrthing with SSL.&#13;
+ - everything with SSL.&#13;
 &#13;
 Warning:&#13;
 It will wipe all machines!</description>
