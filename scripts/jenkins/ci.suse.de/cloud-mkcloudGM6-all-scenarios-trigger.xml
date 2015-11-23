@@ -103,7 +103,7 @@ want_test_updates=1</properties>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
 nodenumber=4
-want_ceph=1
+storage_method=ceph
 want_test_updates=1</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>

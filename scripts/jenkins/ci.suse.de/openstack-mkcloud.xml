@@ -83,6 +83,18 @@ results are analyzed by https://github.com/SUSE-Cloud/automation/blob/master/scr
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>storage_method</name>
+          <description>Select storage method: default (let mkcloud decide), none (enforce none)</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>default</string>
+              <string>none</string>
+              <string>swift</string>
+              <string>ceph</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>github_pr</name>
           <description>&lt;ORG/repo&gt;:&lt;PRID&gt;:&lt;SHA1&gt;:&lt;BRANCH&gt; of PR to be tested (SHA1 must be latest commit in PR)
@@ -144,16 +156,6 @@ Default: -t -s.</description>
           <description>boot up one lonely node in the admin network and register it with crowbar_register (image type depends on want_sles12 parameter)</description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>want_swift</name>
-          <description>can be used for force off(0) or on(1)</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>want_ceph</name>
-          <description>can be used for force off(0) or on(1)</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>want_all_ssl</name>
           <description>set to 1 to deploy all cloud services with SSL aka HTTPS</description>
@@ -277,11 +279,33 @@ if [[ $hacloud == 1 ]] ; then
   
   # for now disable ceph deployment in HA mode explicitly
   # it would need 5 nodes (2 for the cluster + 3 nodes for compute and ceph)
-  export want_ceph=0
-  export cephvolumenumber=0
+  #### temorarily allow ceph in HA (test if it works)
+  #export want_ceph=0
+  #export cephvolumenumber=0
 fi
 
-
+#storage
+case "$storage_method" in
+  none)
+    want_ceph=0
+    want_swift=0
+    ;;
+  swift)
+    want_ceph=0
+    want_swift=1  
+    ;;
+  ceph)
+    want_ceph=1
+    want_swift=0
+    if [[ $nodenumber &lt; 5 ]] ; then
+      export nodenumber=5
+    fi
+    cephvolumenumber=2
+    ;;
+  *)
+    unset want_ceph
+    unset want_swift
+esac
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GM and without TESTHEAD

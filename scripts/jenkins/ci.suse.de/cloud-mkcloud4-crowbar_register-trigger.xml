@@ -53,7 +53,6 @@
 nodenumber=2
 mkcloudtarget=instonly
 TESTHEAD=1
-want_swift=0
 WITHCROWBARREGISTER=true</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
