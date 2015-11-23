@@ -238,7 +238,9 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
   
-  crowbar_batch --timeout 2400 build scenario.yml' || ret=$?
+  crowbar_batch --timeout 2400 build scenario.yml
+  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup"
+  ' || ret=$?
 
 echo "mkphyscloud ret=$ret"
 
