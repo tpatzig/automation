@@ -2,31 +2,34 @@
 <project>
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
-  <keepDependencies>false</keepDependencies>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <concurrentBuild>false</concurrentBuild>
-  <assignedNode>cloud-trigger</assignedNode>
-  <canRoam>false</canRoam>
-  <logRotator>
+  <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>7</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
-  <properties/>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+  </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <triggers class="vector">
+  <assignedNode>cloud-trigger</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
     <hudson.triggers.TimerTrigger>
-      <spec>H 19 */2 * *</spec>
+      <spec>H 6 */2 * *</spec>
     </hudson.triggers.TimerTrigger>
-    <org.jenkinsci.plugins.urltrigger.URLTrigger>
-      <spec>H/5 * * * *</spec>
-      <labelRestriction>true</labelRestriction>
+    <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
+      <spec>H/2 * * * *</spec>
       <triggerLabel>cloud-trigger</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
-          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/5:/Staging/images/iso/?regexp=x86_64</url>
+          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/4:/Staging/images/iso/?regexp=x86_64</url>
           <proxyActivated>false</proxyActivated>
           <checkStatus>false</checkStatus>
           <statusCode>200</statusCode>
@@ -39,15 +42,22 @@
           </contentTypes>
         </org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
       </entries>
+      <labelRestriction>true</labelRestriction>
     </org.jenkinsci.plugins.urltrigger.URLTrigger>
   </triggers>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.tasks.Shell>
+      <command>echo starttime=$(date +%s) &gt; build_start_time
+</command>
+    </hudson.tasks.Shell>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
       <configs>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>cloudsource=develcloud5
+              <properties>cloudsource=develcloud4
+TESTHEAD=1
 nodenumber=2
 mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
 </properties>
@@ -56,7 +66,6 @@ mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -77,12 +86,13 @@ mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>cloudsource=develcloud5
-want_sles12=1
+              <properties>cloudsource=develcloud4
+TESTHEAD=1
 nodenumber=3
 networkingplugin=linuxbridge
 </properties>
@@ -91,7 +101,6 @@ networkingplugin=linuxbridge
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -112,22 +121,28 @@ networkingplugin=linuxbridge
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
       </configs>
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers>
-    <hudson.plugins.parameterizedtrigger.BuildTrigger>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@">
       <configs>
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>project=Devel:Cloud:5
+              <properties>project=Devel:Cloud:4
 subproject=Staging
 packagefilter=crowbar python openstack patterns release-notes-suse-openstack-cloud suse-cloud-upgrade
-starttime=1999955453
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+            <hudson.plugins.parameterizedtrigger.FileBuildParameters>
+              <propertiesFile>build_start_time</propertiesFile>
+              <failTriggerOnMissing>true</failTriggerOnMissing>
+              <useMatrixChild>false</useMatrixChild>
+              <onlyExactRuns>false</onlyExactRuns>
+            </hudson.plugins.parameterizedtrigger.FileBuildParameters>
           </configs>
           <projects>openstack-submit-project</projects>
           <condition>SUCCESS</condition>
