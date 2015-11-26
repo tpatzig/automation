@@ -31,6 +31,10 @@ FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (see 
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -90,10 +94,6 @@ FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (see 
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
@@ -142,7 +142,7 @@ export runner_url=$runner_url ;
 export scenario_url=$scenario_url ; 
 export want_node_aliases=controller=2,compute=2,ceph=3 ;
 export want_node_roles=controller=2,compute=2,storage=3 ;
-export want_node_os=suse-12.1=4,suse-12.0=3 ;
+# export want_node_os=suse-12.1=4,suse-12.0=3 ; # SES-2.1 is now on SLE12SP1
 export want_ceph=1 ;
 export cephvolumenumber=1 ;
 export scenario=\"scenario.yml\" ;
