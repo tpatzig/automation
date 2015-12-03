@@ -20,6 +20,10 @@
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -93,6 +97,11 @@ Default: openvswitch</description>
           <description>All the steps that needs to be completed to have cloud installed</description>
           <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal testsetup run_cct</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>want_horizon_ssl</name>
+          <description>If set to 1 horizon will use https</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>WITHREBOOT</name>
           <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
@@ -110,10 +119,6 @@ Default: openvswitch</description>
         </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
