@@ -180,9 +180,13 @@ if [ "$ret" = "0" ]; then
 # preparation of iSCSI
 zypper --gpg-auto-import-keys -p http://download.opensuse.org/repositories/devel:/languages:/python/SLE_12/ --non-interactive install python-sh
 
+
 wget --no-check-certificate https://raw.githubusercontent.com/aplanas/automation/master/scripts/iscsictl.py
 
 chmod +x iscsictl.py
+
+# stop chef-client to avoid removing of ssh authorized keys records
+rcchef-client stop
 
 ./iscsictl.py --service target --host \$(hostname)
 
@@ -195,6 +199,8 @@ chmod +x iscsictl.py
 ./iscsictl.py --service initiator --target_host \$(hostname) --host network1
 ./iscsictl.py --service initiator --target_host \$(hostname) --host network2
 
+# start chef-client again as the iscsi thingy is all set
+rcchef-client start
 
 # preparation of SBD for services nodes
 SBD_DEV_SERVICES=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
