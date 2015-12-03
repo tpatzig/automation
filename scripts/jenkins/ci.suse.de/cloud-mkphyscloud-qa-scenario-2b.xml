@@ -182,13 +182,13 @@ wget --no-check-certificate https://raw.githubusercontent.com/aplanas/automation
 
 chmod +x iscsictl.py
 
-./iscsictl.py --service target --host \$(hostname)
+./iscsictl.py --service target --host \$(hostname) --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host controller1
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller1 --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host controller2
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller2 --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host controller3
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller3 --no-key
 
 
 # preparation of SBD

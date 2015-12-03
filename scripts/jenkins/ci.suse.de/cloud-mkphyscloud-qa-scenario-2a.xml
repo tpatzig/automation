@@ -185,22 +185,18 @@ wget --no-check-certificate https://raw.githubusercontent.com/aplanas/automation
 
 chmod +x iscsictl.py
 
-# stop chef-client to avoid removing of ssh authorized keys records
-rcchef-client stop
+./iscsictl.py --service target --host \$(hostname) --no-key
 
-./iscsictl.py --service target --host \$(hostname)
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller1 --no-key
+./iscsictl.py --service initiator --target_host \$(hostname) --host controller2 --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host controller1
-./iscsictl.py --service initiator --target_host \$(hostname) --host controller2
+./iscsictl.py --service initiator --target_host \$(hostname) --host data1 --no-key
+./iscsictl.py --service initiator --target_host \$(hostname) --host data2 --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host data1
-./iscsictl.py --service initiator --target_host \$(hostname) --host data2
+./iscsictl.py --service initiator --target_host \$(hostname) --host network1 --no-key
+./iscsictl.py --service initiator --target_host \$(hostname) --host network2 --no-key
 
-./iscsictl.py --service initiator --target_host \$(hostname) --host network1
-./iscsictl.py --service initiator --target_host \$(hostname) --host network2
 
-# start chef-client again as the iscsi thingy is all set
-rcchef-client start
 
 # preparation of SBD for services nodes
 SBD_DEV_SERVICES=\$(ssh controller1 echo '/dev/disk/by-id/scsi-\$(lsscsi -i | grep LIO | tr -s " " |cut -d " " -f7)')
