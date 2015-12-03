@@ -172,7 +172,8 @@ if [ "$ret" = "0" ]; then
 export ZYPP_LOCK_TIMEOUT=120
 zypper --gpg-auto-import-keys -p http://download.opensuse.org/repositories/devel:/languages:/python/SLE_12/ --non-interactive install python-sh
 
-wget --no-check-certificate https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/iscsictl.py
+# wget --no-check-certificate https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/iscsictl.py
+wget --no-check-certificate https://raw.githubusercontent.com/aplanas/automation/master/scripts/iscsictl.py
 
 chmod +x iscsictl.py
 
