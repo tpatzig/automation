@@ -311,6 +311,8 @@ case "$storage_method" in
     unset want_ceph
     unset want_swift
 esac
+export want_ceph
+export want_swift
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GM and without TESTHEAD
