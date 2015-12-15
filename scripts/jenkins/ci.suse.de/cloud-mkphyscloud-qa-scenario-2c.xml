@@ -85,7 +85,7 @@ FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (see 
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-2c-sbd-kvm.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/fix-2c-trove/scripts/scenarios/cloud6/qa-scenario-2c-sbd-kvm.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
