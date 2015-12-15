@@ -208,9 +208,24 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
 crowbar_batch --timeout 2400 build scenario.yml
-source qa_crowbarsetup.sh ;
-onadmin_runlist testsetup
-onadmin_run_cct $cct_tests
+
+' || ret=$?
+fi
+
+if [ "$ret" = "0" ]; then
+# Run testsetup and cct
+ssh root@$admin "
+export cloud=$cloud ; 
+export TESTHEAD=$TESTHEAD ;
+export cloudsource=$cloudsource ; 
+export nodenumber=$nodenumber ; 
+export hacloud=$hacloud ; 
+export clusterconfig=$clusterconfig ; 
+export want_ceph=1 ;
+export cephvolumenumber=1
+export cct_tests=$cct_tests "'
+
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup; onadmin_run_cct"
 ' || ret=$?
 
 echo "mkphyscloud ret=$ret"
