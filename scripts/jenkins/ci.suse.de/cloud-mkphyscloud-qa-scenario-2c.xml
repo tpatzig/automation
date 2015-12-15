@@ -207,7 +207,10 @@ EOSCRIPT
   
 
   ssh root@$admin './sbd_prepare
-crowbar_batch --timeout 2400 build scenario.yml' || ret=$?
+crowbar_batch --timeout 2400 build scenario.yml
+onadmin_runlist testsetup
+onadmin_run_cct $cct_tests
+' || ret=$?
 
 echo "mkphyscloud ret=$ret"
 
