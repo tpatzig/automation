@@ -213,7 +213,8 @@ crowbar_batch --timeout 2400 build scenario.yml
 fi
 
 if [ "$ret" = "0" ]; then
-# Run testsetup and cct
+
+echo "Running testsetup and cct from admin node..."
 ssh root@$admin "
 export cloud=$cloud ; 
 export TESTHEAD=$TESTHEAD ;
