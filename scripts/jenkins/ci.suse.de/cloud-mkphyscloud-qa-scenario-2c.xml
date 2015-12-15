@@ -208,6 +208,7 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
 crowbar_batch --timeout 2400 build scenario.yml
+source qa_crowbarsetup.sh ;
 onadmin_runlist testsetup
 onadmin_run_cct $cct_tests
 ' || ret=$?
