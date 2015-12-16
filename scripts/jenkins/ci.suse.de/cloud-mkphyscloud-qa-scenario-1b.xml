@@ -34,25 +34,10 @@ It will wipe all QA3 machines!</description>
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.BooleanParameterDefinition>
-          <name>WITHREBOOT</name>
-          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-        <hudson.model.TextParameterDefinition>
-          <name>UPDATEREPOS</name>
-          <description>Update repositories (one URL per line)</description>
-          <defaultValue/>
-        </hudson.model.TextParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>UPDATEBEFOREINSTALL</name>
-          <description>add update repos before crowbar install</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>susecloud6</defaultValue>
+          <defaultValue>develcloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>TESTHEAD</name>
@@ -102,13 +87,28 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup run_cct</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-1b-ipmi-kvm-xen.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/fix-2c-trove/scripts/scenarios/cloud6/qa-scenario-1b-ipmi-kvm-xen.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>UPDATEREPOS</name>
+          <description>Update repositories (one URL per line)</description>
+          <defaultValue/>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>UPDATEBEFOREINSTALL</name>
+          <description>add update repos before crowbar install</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>WITHREBOOT</name>
+          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -172,7 +172,7 @@ wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
+timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands; onadmin_run_cct"
 ' || ret=$?
 
 
