@@ -2,31 +2,28 @@
 <project>
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
-  <logRotator class="hudson.tasks.LogRotator">
+  <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-trigger</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
     <daysToKeep>-1</daysToKeep>
     <numToKeep>7</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
-  <keepDependencies>false</keepDependencies>
-  <properties>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-  </properties>
+  <properties/>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-trigger</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-    <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
+  <triggers class="vector">
+    <org.jenkinsci.plugins.urltrigger.URLTrigger>
       <spec>H/5 * * * *</spec>
+      <labelRestriction>true</labelRestriction>
       <triggerLabel>cloud-trigger</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
-          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/ibs/SUSE:/SLE-12-SP1:/Update:/Products:/Cloud6/images/iso/?regexp=x86_64</url>
+          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/SUSE:/SLE-12-SP1:/Update:/Products:/Cloud6/images/iso/?regexp=x86_64</url>
           <proxyActivated>false</proxyActivated>
           <checkStatus>false</checkStatus>
           <statusCode>200</statusCode>
@@ -39,16 +36,10 @@
           </contentTypes>
         </org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
       </entries>
-      <labelRestriction>true</labelRestriction>
     </org.jenkinsci.plugins.urltrigger.URLTrigger>
   </triggers>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
-    <hudson.tasks.Shell>
-      <command>echo starttime=$(date +%s) &gt; build_start_time
-</command>
-    </hudson.tasks.Shell>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder>
       <configs>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
@@ -66,6 +57,7 @@ want_node_aliases=controller=1,compute-kvm=1
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -86,7 +78,6 @@ want_node_aliases=controller=1,compute-kvm=1
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
@@ -104,6 +95,7 @@ mkcloudtarget=all
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -124,7 +116,6 @@ mkcloudtarget=all
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
       </configs>
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
