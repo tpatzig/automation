@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <actions/>
+  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo starttime=$(date +%s) &gt; build_start_time
+echo "########################################################################"
+env
+echo "########################################################################"
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>set -x
+# emptying the workspace
+mkdir -p empty
+rsync -r --delete empty/ ./
+
+export artifacts_dir=$WORKSPACE/.artifacts
+rm -rf $artifacts_dir
+mkdir -p $artifacts_dir
+touch $artifacts_dir/.ignore
+
+export automationrepo=~/github.com/SUSE-Cloud/automation
+export debug_qa_crowbarsetup=1
+export cephvolumenumber=1 # one disk is either cinder raw, ceph-osd or swift storage
+export debug=0
+export want_neutronsles12=1
+export want_mtu_size=8900
+export rally_server=backup.cloudadm.qa.suse.de
+# to not fail when two concurrent zypper runs happen:
+export ZYPP_LOCK_TIMEOUT=120
+
+case $cloudsource in
+  GM4|GM4+up|GM5|GM5+up)
+    echo "Not setting want_ldap=1"
+  ;;
+  M*|develcloud6|susecloud6)
+    echo "FIXME: Not setting want_ldap=1 until hybrid backend is ported to Kilo"
+  ;;
+  *)
+    [[ $nodenumber == 2 ]] &amp;&amp; export want_ldap=1
+  ;;
+esac
+
+if [[ $cinder_backend = " " ]] ; then
+  cinder_backend=""
+fi
+
+# HAcloud
+if [[ $hacloud == 1 ]] ; then
+  export clusterconfig="data+services+network=2"
+  if [[ $nodenumber &lt; 4 ]] ; then
+    export nodenumber=4
+  fi
+
+  # for now disable ceph deployment in HA mode explicitly
+  # it would need 5 nodes (2 for the cluster + 3 nodes for compute and ceph)
+  #### temorarily allow ceph in HA (test if it works)
+  #export want_ceph=0
+  #export cephvolumenumber=0
+fi
+
+#storage
+case "$storage_method" in
+  none)
+    want_ceph=0
+    want_swift=0
+  ;;
+  swift)
+    want_ceph=0
+    want_swift=1
+  ;;
+  ceph)
+    want_ceph=1
+    want_swift=0
+    if [[ $nodenumber &lt; 5 ]] ; then
+      export nodenumber=5
+    fi
+    cephvolumenumber=2
+  ;;
+  *)
+    unset want_ceph
+    unset want_swift
+esac
+export want_ceph
+export want_swift
+
+if [ ! -z "$UPDATEREPOS" ] ; then
+  # testing update only makes sense with GM and without TESTHEAD
+  #  unset TESTHEAD
+  #  export cloudsource=GM
+  export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
+fi
+
+# automation bootstrapping
+if ! [ -e ${automationrepo}/scripts/jenkins/update_automation ] ; then
+  rm -rf ${automationrepo}
+  curl https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/jenkins/update_automation | bash
+fi
+# fetch the latest automation updates
+${automationrepo}/scripts/jenkins/update_automation #NO PARAMETERS HERE ANY MORE!!!
+
+function mkcloudgating_trap()
+{
+  $ghs -a set-status -s "failure" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+}
+
+## mkcloud github PR gating
+if [[ $github_pr ]] ; then
+  github_opts=(${github_pr//:/ })
+  github_pr_repo=${github_opts[0]}
+  github_pr_id=${github_opts[1]}
+  github_pr_sha=${github_opts[2]}
+
+  echo "testing PR: https://github.com/$github_pr_repo/pull/$github_pr_id"
+  ghs=${automationrepo}/scripts/github-status/github-status.rb
+  zypper -n install "rubygem(netrc)" "rubygem(octokit)"
+
+  if ! $ghs -r $github_pr_repo -a is-latest-sha -p $github_pr_id -c $github_pr_sha ; then
+    $ghs -a set-status -s "error" -t $BUILD_URL -r $github_pr_repo -c $github_pr_sha -m "SHA1 mismatch, newer commit exists"
+    exit 1
+  fi
+
+  trap "mkcloudgating_trap" ERR
+
+  # Support for automation self-gating
+  if [[ "$github_pr_repo" = "SUSE-Cloud/automation" ]]; then
+    automationrepo_orig=$automationrepo
+    pr_dir=`mktemp -d $WORKSPACE/SUSE-Cloud.automation.XXXXXX`
+    automationrepo=$pr_dir/automation
+
+    mkdir -p $automationrepo
+    rsync -a ${automationrepo_orig%/}/ $automationrepo/
+    pushd $automationrepo
+    ghremote=origin
+    git config --get-all remote.${ghremote}.fetch | grep -q pull || \
+    git config --add remote.${ghremote}.fetch "+refs/pull/*/head:refs/remotes/${ghremote}/pr/*"
+    git fetch $ghremote
+    git checkout -t $ghremote/pr/$github_pr_id
+    echo "we merge to always test what will end up in master"
+    git merge master -m temp-merge-commit
+    popd
+  elif [[ "$github_pr_repo" = "SUSE-Cloud/cct" ]]; then
+    export want_cct_pr=$github_pr_id
+  fi
+
+  $ghs -a set-status -s "pending" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+fi
+
+echo "########################################################################"
+env
+echo "########################################################################"
+
+MKCLOUDTARGET=$mkcloudtarget
+[ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; MKCLOUDTARGET='cleanup prepare setupadmin addupdaterepo instcrowbar setupcompute instcompute proposal testsetup'
+
+if [ $WITHCROWBARREGISTER == "true" ] ; then
+  export nodenumberlonelynode=1
+  MKCLOUDTARGET="$MKCLOUDTARGET setuplonelynodes crowbar_register"
+fi
+
+if [ -e mkcloud.pid ] ; then
+  kill -KILL -`mkcloud.pid` ||: # make sure that the previous mkcloud (and subprocesses) are dead
+fi
+starttime=`date +%s`
+
+mkcloudwrapper="${automationrepo}/scripts/mkcloudhost/allocpool ${automationrepo}/scripts/mkcloudhost/mkcloude"
+#FIXME - drop next 3 lines once the change in allocpool is merged
+if grep -q "exec.*mkcloude" ${automationrepo}/scripts/mkcloudhost/allocpool ; then
+  mkcloudwrapper=${automationrepo}/scripts/mkcloudhost/allocpool
+fi
+
+perl -e "alarm 4*60*60 ; exec '${mkcloudwrapper} bash -x ${automationrepo}/scripts/mkcloud setuphost $(echo -n $MKCLOUDTARGET) ' " | tee $artifacts_dir/mkcloud_short_stdout.log
+ret=${PIPESTATUS[0]}
+if [[ $ret != 0 ]] ; then
+  [[ $github_pr_sha ]] &amp;&amp; mkcloudgating_trap
+  echo "mkcloud ret=$ret"
+  exit $ret # check return code before tee
+fi
+
+# report mkcloud-gating status
+if [[ $github_pr_sha ]] ; then
+  $ghs -r $github_pr_repo -a set-status -s "success" -t $BUILD_URL -c $github_pr_sha
+  trap "-" ERR
+fi
+
+[[ $TESTHEAD ]] || exit 0
+[[ ! $hacloud  ]] || exit 0  # for now disable package submission for ha setups
+[[ $github_pr_sha ]] &amp;&amp; exit 0
+
+
+if [[ $mode == "basetest" ]] ; then
+  echo "$mode succeeded - triggering extra tests"
+  d=/root/lasttriggered
+  f=$d/$cloudsource
+  last=$(cat $f || echo 0)
+  echo "if [[ $(($last + 1800)) -gt $(date +%s) ]] ; then echo we just triggered ... skipping ; exit 0 ; fi"
+  mkdir -p $d
+  date +%s &gt; $f
+  extra=""
+  nodenumber=3
+  case $cloudsource in
+    develcloud5)
+      extra="want_sles12=1"
+    ;;
+    develcloud6)
+      nodenumber=4
+    ;;
+  esac
+  # linuxbridge+ceph:
+  ${automationrepo}/scripts/jenkins/jenkins-job-trigger openstack-mkcloud -p mode=submit cloudsource="$develcloud6" nodenumber=$nodenumber networkingplugin=linuxbridge $extra
+fi
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>set -x
+# emptying the workspace
+mkdir -p empty
+rsync -r --delete empty/ ./
+
+export artifacts_dir=$WORKSPACE/.artifacts
+rm -rf $artifacts_dir
+mkdir -p $artifacts_dir
+touch $artifacts_dir/.ignore
+
+export automationrepo=~/github.com/SUSE-Cloud/automation
+export debug_qa_crowbarsetup=1
+export cephvolumenumber=1 # one disk is either cinder raw, ceph-osd or swift storage
+export debug=0
+export want_neutronsles12=1
+export want_mtu_size=8900
+export rally_server=backup.cloudadm.qa.suse.de
+# to not fail when two concurrent zypper runs happen:
+export ZYPP_LOCK_TIMEOUT=120
+
+case $cloudsource in
+  GM4|GM4+up|GM5|GM5+up)
+    echo "Not setting want_ldap=1"
+  ;;
+  M*|develcloud6|susecloud6)
+    echo "FIXME: Not setting want_ldap=1 until hybrid backend is ported to Kilo"
+  ;;
+  *)
+    [[ $nodenumber == 2 ]] &amp;&amp; export want_ldap=1
+  ;;
+esac
+
+if [[ $cinder_backend = " " ]] ; then
+  cinder_backend=""
+fi
+
+# HAcloud
+if [[ $hacloud == 1 ]] ; then
+  export clusterconfig="data+services+network=2"
+  if [[ $nodenumber &lt; 4 ]] ; then
+    export nodenumber=4
+  fi
+
+  # for now disable ceph deployment in HA mode explicitly
+  # it would need 5 nodes (2 for the cluster + 3 nodes for compute and ceph)
+  #### temorarily allow ceph in HA (test if it works)
+  #export want_ceph=0
+  #export cephvolumenumber=0
+fi
+
+#storage
+case "$storage_method" in
+  none)
+    want_ceph=0
+    want_swift=0
+  ;;
+  swift)
+    want_ceph=0
+    want_swift=1
+  ;;
+  ceph)
+    want_ceph=1
+    want_swift=0
+    if [[ $nodenumber &lt; 5 ]] ; then
+      export nodenumber=5
+    fi
+    cephvolumenumber=2
+  ;;
+  *)
+    unset want_ceph
+    unset want_swift
+esac
+export want_ceph
+export want_swift
+
+if [ ! -z "$UPDATEREPOS" ] ; then
+  # testing update only makes sense with GM and without TESTHEAD
+  #  unset TESTHEAD
+  #  export cloudsource=GM
+  export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
+fi
+
+# automation bootstrapping
+if ! [ -e ${automationrepo}/scripts/jenkins/update_automation ] ; then
+  rm -rf ${automationrepo}
+  curl https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/jenkins/update_automation | bash
+fi
+# fetch the latest automation updates
+${automationrepo}/scripts/jenkins/update_automation #NO PARAMETERS HERE ANY MORE!!!
+
+function mkcloudgating_trap()
+{
+  $ghs -a set-status -s "failure" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+}
+
+## mkcloud github PR gating
+if [[ $github_pr ]] ; then
+  github_opts=(${github_pr//:/ })
+  github_pr_repo=${github_opts[0]}
+  github_pr_id=${github_opts[1]}
+  github_pr_sha=${github_opts[2]}
+
+  echo "testing PR: https://github.com/$github_pr_repo/pull/$github_pr_id"
+  ghs=${automationrepo}/scripts/github-status/github-status.rb
+  zypper -n install "rubygem(netrc)" "rubygem(octokit)"
+
+  if ! $ghs -r $github_pr_repo -a is-latest-sha -p $github_pr_id -c $github_pr_sha ; then
+    $ghs -a set-status -s "error" -t $BUILD_URL -r $github_pr_repo -c $github_pr_sha -m "SHA1 mismatch, newer commit exists"
+    exit 1
+  fi
+
+  trap "mkcloudgating_trap" ERR
+
+  # Support for automation self-gating
+  if [[ "$github_pr_repo" = "SUSE-Cloud/automation" ]]; then
+    automationrepo_orig=$automationrepo
+    pr_dir=`mktemp -d $WORKSPACE/SUSE-Cloud.automation.XXXXXX`
+    automationrepo=$pr_dir/automation
+
+    mkdir -p $automationrepo
+    rsync -a ${automationrepo_orig%/}/ $automationrepo/
+    pushd $automationrepo
+    ghremote=origin
+    git config --get-all remote.${ghremote}.fetch | grep -q pull || \
+    git config --add remote.${ghremote}.fetch "+refs/pull/*/head:refs/remotes/${ghremote}/pr/*"
+    git fetch $ghremote
+    git checkout -t $ghremote/pr/$github_pr_id
+    echo "we merge to always test what will end up in master"
+    git merge master -m temp-merge-commit
+    popd
+  elif [[ "$github_pr_repo" = "SUSE-Cloud/cct" ]]; then
+    export want_cct_pr=$github_pr_id
+  fi
+
+  $ghs -a set-status -s "pending" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+fi
+
+echo "########################################################################"
+env
+echo "########################################################################"
+
+MKCLOUDTARGET=$mkcloudtarget
+[ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; MKCLOUDTARGET='cleanup prepare setupadmin addupdaterepo instcrowbar setupcompute instcompute proposal testsetup'
+
+if [ $WITHCROWBARREGISTER == "true" ] ; then
+  export nodenumberlonelynode=1
+  MKCLOUDTARGET="$MKCLOUDTARGET setuplonelynodes crowbar_register"
+fi
+
+if [ -e mkcloud.pid ] ; then
+  kill -KILL -`mkcloud.pid` ||: # make sure that the previous mkcloud (and subprocesses) are dead
+fi
+starttime=`date +%s`
+
+mkcloudwrapper="${automationrepo}/scripts/mkcloudhost/allocpool ${automationrepo}/scripts/mkcloudhost/mkcloude"
+#FIXME - drop next 3 lines once the change in allocpool is merged
+if grep -q "exec.*mkcloude" ${automationrepo}/scripts/mkcloudhost/allocpool ; then
+  mkcloudwrapper=${automationrepo}/scripts/mkcloudhost/allocpool
+fi
+
+perl -e "alarm 4*60*60 ; exec '${mkcloudwrapper} bash -x ${automationrepo}/scripts/mkcloud setuphost $(echo -n $MKCLOUDTARGET) ' " | tee $artifacts_dir/mkcloud_short_stdout.log
+ret=${PIPESTATUS[0]}
+if [[ $ret != 0 ]] ; then
+  [[ $github_pr_sha ]] &amp;&amp; mkcloudgating_trap
+  echo "mkcloud ret=$ret"
+  exit $ret # check return code before tee
+fi
+
+# report mkcloud-gating status
+if [[ $github_pr_sha ]] ; then
+  $ghs -r $github_pr_repo -a set-status -s "success" -t $BUILD_URL -c $github_pr_sha
+  trap "-" ERR
+fi
+
+[[ $TESTHEAD ]] || exit 0
+[[ ! $hacloud  ]] || exit 0  # for now disable package submission for ha setups
+[[ $github_pr_sha ]] &amp;&amp; exit 0
+
+
+if [[ $mode == "basetest" ]] ; then
+  echo "$mode succeeded - triggering extra tests"
+  d=/root/lasttriggered
+  f=$d/$cloudsource
+  last=$(cat $f || echo 0)
+  echo "if [[ $(($last + 1800)) -gt $(date +%s) ]] ; then echo we just triggered ... skipping ; exit 0 ; fi"
+  mkdir -p $d
+  date +%s &gt; $f
+  extra=""
+  nodenumber=3
+  case $cloudsource in
+    develcloud5)
+      extra="want_sles12=1"
+    ;;
+    develcloud6)
+      nodenumber=4
+    ;;
+  esac
+  # linuxbridge+ceph:
+  ${automationrepo}/scripts/jenkins/jenkins-job-trigger openstack-mkcloud -p mode=submit cloudsource="$develcloud6" nodenumber=$nodenumber networkingplugin=linuxbridge $extra
+fi
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
