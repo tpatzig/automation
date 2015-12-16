@@ -76,35 +76,45 @@ mkcloudtarget=all
       </phaseJobs>
     </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
     <com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
-      <phaseName>Extra Checks (non-HA/OVS+Linuxbridge)</phaseName>
+      <phaseName>Extra Scenarios</phaseName>
       <continuationCondition>SUCCESSFUL</continuationCondition>
       <phaseJobs>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>openstack-mkcloud</jobName>
+          <jobName>cloud-mkcloud6-scenario-ha-ssl</jobName>
           <currParams>false</currParams>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
-TESTHEAD=
-want_test_updates=1
-mkcloudtarget=all_noreboot
-hacloud=1
-networkingmode=vxlan
-nodenumber=4
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>openstack-mkcloud</jobName>
+          <jobName>cloud-mkcloud6-scenario-docker</jobName>
           <currParams>false</currParams>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
-want_docker=1
-TESTHEAD=
-want_test_updates=1
-mkcloudtarget=all
+</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+        </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
+        <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
+          <jobName>cloud-mkcloud6-scenario-raid</jobName>
+          <currParams>false</currParams>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>cloudsource=susecloud6
+</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+        </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
+        <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
+          <jobName>cloud-mkcloud6-scenario-tempest</jobName>
+          <currParams>false</currParams>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>cloudsource=susecloud6
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
