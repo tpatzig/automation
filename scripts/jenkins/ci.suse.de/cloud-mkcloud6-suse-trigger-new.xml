@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <com.tikal.jenkins.plugins.multijob.MultiJobProject plugin="jenkins-multijob-plugin@">
   <actions/>
-  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;&#13;
+&#13;
+NAMING DOES NOT FOLLOW CONVENTION:  "-trigger" is the suffix for triggers &#13;
+SO MOVE THE "-new" elsewhere</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>7</numToKeep>
@@ -82,7 +85,7 @@ want_node_aliases=controller=1,compute-kvm=1
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 TESTHEAD=
-nodenumber=3
+nodenumber=4
 want_ceph=1
 networkingplugin=linuxbridge
 mkcloudtarget=all
