@@ -157,6 +157,7 @@ export hacloud=$hacloud ;
 export want_ceph=$want_ceph ;
 export want_swift=$want_swift ;
 export cephvolumenumber=$cephvolumenumber ;
+export want_tempest=$want_tempest ;
 export tempestoptions=$tempestoptions ;
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
