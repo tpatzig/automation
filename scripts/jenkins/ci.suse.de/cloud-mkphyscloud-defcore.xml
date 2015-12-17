@@ -87,7 +87,7 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal testsetup</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>want_tempest</name>
