@@ -87,7 +87,7 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal testsetup</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud proposal</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>want_tempest</name>
@@ -124,7 +124,7 @@ It will wipe all QA3 machines!</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
-tempestoptions="-t -s"
+tempestoptions="--serial --no-virtual-env -- --load-list defcore.txt"
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
