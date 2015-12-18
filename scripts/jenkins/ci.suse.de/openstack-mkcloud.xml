@@ -253,7 +253,7 @@ case $cloudsource in
         echo "Not setting want_ldap=1"
         ;;
     *)
-        [[ $nodenumber == 2 ]] &amp;&amp; export want_ldap=1
+        [[ $nodenumber == 2 &amp;&amp; -z "$scenario" ]] &amp;&amp; export want_ldap=1
         ;;
 esac
    
