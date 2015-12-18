@@ -2,23 +2,17 @@
 <com.tikal.jenkins.plugins.multijob.MultiJobProject plugin="jenkins-multijob-plugin@">
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <jenkins.model.BuildDiscarderProperty>
-      <strategy class="hudson.tasks.LogRotator">
-        <daysToKeep>-1</daysToKeep>
-        <numToKeep>7</numToKeep>
-        <artifactDaysToKeep>-1</artifactDaysToKeep>
-        <artifactNumToKeep>-1</artifactNumToKeep>
-      </strategy>
-    </jenkins.model.BuildDiscarderProperty>
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-trigger</assignedNode>
@@ -58,12 +52,10 @@
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
@@ -75,32 +67,28 @@ want_node_aliases=controller=1,compute-kvm=1
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>openstack-mkcloud lb</jobName>
+          <jobName>openstack-mkcloud</jobName>
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 TESTHEAD=
-nodenumber=3
+nodenumber=4
 want_ceph=1
 networkingplugin=linuxbridge
 mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
       </phaseJobs>
@@ -114,19 +102,16 @@ mkcloudtarget=all
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
@@ -134,19 +119,16 @@ mkcloudtarget=all
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
@@ -154,19 +136,16 @@ mkcloudtarget=all
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
@@ -174,19 +153,16 @@ mkcloudtarget=all
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
-          <parsingRulesPath/>
           <maxRetries>0</maxRetries>
           <enableRetryStrategy>false</enableRetryStrategy>
           <enableCondition>false</enableCondition>
           <abortAllJob>false</abortAllJob>
-          <condition/>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>cloudsource=susecloud6
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
           <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
       </phaseJobs>
