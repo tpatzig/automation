@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>Just a trigger to automatically trigger daily runs with docker enabled</description>
+  <description>Just a trigger to automatically trigger daily runs with openvswitch/vlan and dvr enabled</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -12,9 +12,9 @@
       <permission>hudson.model.Item.Discover:cloud</permission>
       <permission>hudson.model.Item.Build:cloud</permission>
       <permission>hudson.model.Item.Cancel:cloud</permission>
-      <permission>hudson.model.Item.Configure:cloud</permission>
-      <permission>hudson.model.Item.Delete:cloud</permission>
       <permission>hudson.model.Item.Workspace:cloud</permission>
+      <permission>hudson.model.Item.Delete:cloud</permission>
+      <permission>hudson.model.Item.Configure:cloud</permission>
       <permission>hudson.model.Run.Update:cloud</permission>
     </hudson.security.AuthorizationMatrixProperty>
     <jenkins.model.BuildDiscarderProperty>
@@ -53,8 +53,10 @@
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=develcloud6
-want_docker=1
-mkcloudtarget=all</properties>
+networkingplugin=openvswitch
+networkingmode=vlan
+want_dvr=1
+mkcloudtarget=all_noreboot</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>openstack-mkcloud</projects>
