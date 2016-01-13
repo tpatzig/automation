@@ -238,13 +238,22 @@ EOSCRIPT
   scp /tmp/sbd_prepare_$admin root@$admin:sbd_prepare
   
 
-  ssh root@$admin './sbd_prepare
-  
-  crowbar_batch --timeout 2400 build scenario.yml
+ssh root@$admin  "
   export cloud=$cloud ; 
   export TESTHEAD=$TESTHEAD ;
-  export cloudsource=$cloudsource ;  
-  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup"
+  export cloudsource=$cloudsource ; 
+  export nodenumber=$nodenumber ; 
+  export hacloud=$hacloud ; 
+  export clusterconfig=$clusterconfig ; 
+  export want_ceph=1 ;
+  export cephvolumenumber=0;
+  export cct_tests=$cct_tests "'
+  
+  ./sbd_prepare
+  
+  crowbar_batch --timeout 2400 build scenario.yml
+  
+  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup; onadmin_run_cct;"
   ' || ret=$?
 
 echo "mkphyscloud ret=$ret"
