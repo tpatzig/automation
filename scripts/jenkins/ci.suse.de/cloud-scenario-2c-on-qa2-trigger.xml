@@ -30,7 +30,7 @@
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=develcloud6
-TESTHEAD=
+TESTHEAD=1
 hw_number=2</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>

@@ -161,6 +161,7 @@ export hacloud=$hacloud ;
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
+export cct_tests=$cct_tests ;
 export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
@@ -191,7 +192,7 @@ exit $ret
       <caseSensitive>true</caseSensitive>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer plugin="mailer@">
-      <recipients>vmoravec@suse.com</recipients>
+      <recipients/>
       <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>

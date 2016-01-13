@@ -165,6 +165,7 @@ export nodenumber=$nodenumber ;
 export hacloud=$hacloud ; 
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
+export cct_tests=$cct_tests ;
 export commands=\"$commands\" "'
  
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
@@ -172,7 +173,7 @@ wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
+timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands; onadmin_run_cct"
 ' || ret=$?
 
 echo "mkphyscloud ret=$ret"
@@ -190,7 +191,7 @@ exit $ret
       <caseSensitive>true</caseSensitive>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer plugin="mailer@">
-      <recipients>vmoravec@suse.com</recipients>
+      <recipients/>
       <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
