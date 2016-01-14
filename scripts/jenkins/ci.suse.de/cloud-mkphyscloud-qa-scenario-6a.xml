@@ -137,7 +137,7 @@ export runner_url=$runner_url ;
 export scenario_url=$scenario_url ; 
 export want_node_aliases=controller=3,kvm=2,docker=2
 export want_node_roles=controller=3,compute=4
-export scenario=\"scenario.yml\"
+export scenario=/root/scenario.yml
 export commands=\"$commands\" "' 
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
