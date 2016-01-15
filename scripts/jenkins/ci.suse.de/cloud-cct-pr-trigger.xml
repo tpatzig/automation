@@ -7,6 +7,10 @@
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.ChoiceParameterDefinition>
@@ -26,10 +30,6 @@ forceall: trigger rebuild for all open PRs</description>
         </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-trigger</assignedNode>
@@ -81,7 +81,7 @@ declare -a cloud_repos=(
 )
 
 for repo in ${cloud_repos[@]}; do
-    for github_pr in $($ghs -r $repo -a $action); do
+    for github_pr in $(timeout 4m $ghs -r $repo -a $action); do
         github_pr_opts=(${github_pr//:/ })
         github_pr_sha=${github_pr_opts[1]}
         github_pr_branch=${github_pr_opts[2]}
