@@ -30,7 +30,7 @@
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>cloudsource=develcloud6
+              <properties>cloudsource=susecloud6
 TESTHEAD=
 hw_number=2</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
