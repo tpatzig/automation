@@ -22,7 +22,7 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
     <hudson.triggers.TimerTrigger>
-      <spec>H 19 */2 * *</spec>
+      <spec>H 20 * * *</spec>
     </hudson.triggers.TimerTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
@@ -35,7 +35,7 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>TESTHEAD=1
 cloudsource=develcloud6
-nodecount=3
+nodenumber=3
 networkingplugin=openvswitch
 networkingmode=vlan
 want_dvr=1
