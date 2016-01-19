@@ -32,7 +32,6 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
 hw_number=2
-runner_url=https://raw.githubusercontent.com/vuntz/automation/detect-no-manila/scripts/qa_crowbarsetup.sh
 TESTHEAD=</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
