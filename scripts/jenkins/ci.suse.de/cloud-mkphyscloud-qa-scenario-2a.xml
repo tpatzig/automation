@@ -248,7 +248,7 @@ ssh root@$admin  "
   export want_ceph=1 ;
   export cephvolumenumber=0;
   export cct_tests=$cct_tests;
-  export scenario=$scenario "'
+  export scenario=scenario.yml "'
   
   ./sbd_prepare
    
