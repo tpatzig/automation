@@ -247,11 +247,14 @@ ssh root@$admin  "
   export clusterconfig=$clusterconfig ; 
   export want_ceph=1 ;
   export cephvolumenumber=0;
-  export cct_tests=$cct_tests "'
+  export cct_tests=$cct_tests;
+  export scenario=$scenario "'
   
   ./sbd_prepare
+   
+  # crowbar_batch --timeout 2400 build scenario.yml
   
-  crowbar_batch --timeout 2400 build scenario.yml
+  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_batch;"
   
   timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup; onadmin_run_cct;"
   ' || ret=$?
