@@ -32,7 +32,8 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
 hw_number=2
-TESTHEAD=</properties>
+TESTHEAD=
+</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>cloud-mkphyscloud-qa-scenario-2c</projects>
