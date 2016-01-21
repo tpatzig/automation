@@ -92,7 +92,7 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/fix-2c-trove/scripts/scenarios/cloud6/qa-scenario-1b-ipmi-kvm-xen.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-1b-ipmi-kvm-xen.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
