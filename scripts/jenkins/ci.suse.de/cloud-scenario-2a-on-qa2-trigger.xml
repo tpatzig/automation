@@ -32,7 +32,8 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=susecloud6
 hw_number=2
-TESTHEAD=</properties>
+TESTHEAD=
+scenario_url=https://raw.githubusercontent.com/vmoravec/automation/25c67c52fd4a3b25dbec226607ffe927521311ba/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-2a-sbd-kvm.yaml</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>cloud-mkphyscloud-qa-scenario-2a</projects>
