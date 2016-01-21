@@ -33,7 +33,7 @@
               <properties>cloudsource=susecloud6
 hw_number=2
 TESTHEAD=
-
+scenario_url=https://raw.githubusercontent.com/vmoravec/automation/60ae42ba04e57102f3dda7c10c63cabaf625f436/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-1b-ipmi-kvm-xen.yaml
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
