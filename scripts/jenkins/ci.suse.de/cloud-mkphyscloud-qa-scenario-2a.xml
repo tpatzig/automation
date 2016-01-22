@@ -97,7 +97,7 @@ It will wipe all machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-2a-sbd-kvm.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-2a-sbd-kvm.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -259,7 +259,12 @@ ssh root@$admin  "
   timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup; onadmin_run_cct;"
   ' || ret=$?
 
-echo "mkphyscloud ret=$ret"
+if [ $ret != 0 ] ; then
+        set +x
+        error_exit $ret "Deploying scenario 2a failed."
+fi &gt;&amp;2
+
+
 
 fi
 
