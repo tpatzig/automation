@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<matrix-project plugin="matrix-project@1.6">
+  <actions/>
+  <description/>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <axes>
+    <hudson.matrix.TextAxis>
+      <name>scenario_name</name>
+      <values>
+        <string>1b</string>
+        <string>2a</string>
+        <string>2b</string>
+        <string>2c</string>
+        <string>6a</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
+      <name>ssl_type</name>
+      <values>
+        <string>no-ssl</string>
+        <string>ssl-insecure</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
+      <name>cloudsource</name>
+      <values>
+        <string>susecloud6</string>
+      </values>
+    </hudson.matrix.TextAxis>
+  </axes>
+  <builders/>
+  <publishers/>
+  <buildWrappers>
+    <EnvInjectBuildWrapper plugin="envinject@">
+      <info>
+        <groovyScriptContent>def map = [scenario_url: "github.com"]
+return map
+</groovyScriptContent>
+        <loadFilesFromMaster>false</loadFilesFromMaster>
+      </info>
+    </EnvInjectBuildWrapper>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+      <template>#${BUILD_NUMBER}  -- $cloudsource -- $ssl_type -- $scenario_name -- $scenario_url</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+  <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
+    <runSequentially>true</runSequentially>
+    <sorter class="org.jenkinsci.plugin.matrixconfigsorter.LastAxisSorter" plugin="Matrix-sorter-plugin@1.1"/>
+  </executionStrategy>
+</matrix-project>
