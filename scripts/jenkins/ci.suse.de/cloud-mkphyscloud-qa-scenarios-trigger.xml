@@ -21,6 +21,13 @@
   <concurrentBuild>false</concurrentBuild>
   <axes>
     <hudson.matrix.TextAxis>
+      <name>ssl_type</name>
+      <values>
+        <string>no-ssl</string>
+        <string>ssl-insecure</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
       <name>scenario_name</name>
       <values>
         <string>1b</string>
@@ -31,16 +38,15 @@
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
-      <name>ssl_type</name>
-      <values>
-        <string>no-ssl</string>
-        <string>ssl-insecure</string>
-      </values>
-    </hudson.matrix.TextAxis>
-    <hudson.matrix.TextAxis>
       <name>cloudsource</name>
       <values>
         <string>susecloud6</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
+      <name>github_raw_url</name>
+      <values>
+        <string>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
@@ -49,14 +55,38 @@
   <buildWrappers>
     <EnvInjectBuildWrapper plugin="envinject@">
       <info>
-        <groovyScriptContent>def map = [scenario_url: "github.com"]
+        <groovyScriptContent>def scenario_files = [
+  "qa-scenario-1b-ipmi-kvm-xen.yaml",
+  "qa-scenario-2a-sbd-kvm.yaml",
+  "qa-scenario-2b-sbd-kvm-vmware.yaml",
+  "qa-scenario-2c-sbd-kvm.yaml",
+  "qa-scenario-6a-ipmi-kvm-docker.yaml"
+]
+
+def scenario_url = ""
+
+switch (scenario_name) {
+  case "1b":
+     scenario_url = github_raw_url + ssl_type +  "qa-scenario-1b-ipmi-kvm-xen.yaml"
+     break
+ 
+  case "2a":
+     scenario_url = github_raw_url + ssl_type +  "qa-scenario-1b-ipmi-kvm-xen.yaml"
+     break
+
+  default:
+     scenario_url = ""
+}
+
+def map = [scenario_url: scenario_url]
+
 return map
 </groovyScriptContent>
         <loadFilesFromMaster>false</loadFilesFromMaster>
       </info>
     </EnvInjectBuildWrapper>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}  -- $cloudsource -- $ssl_type -- $scenario_name -- $scenario_url</template>
+      <template>#${BUILD_NUMBER} - $cloudsource - $ssl_type - $scenario_url</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
   <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
