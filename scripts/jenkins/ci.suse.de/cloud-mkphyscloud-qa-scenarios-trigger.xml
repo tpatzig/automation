@@ -60,6 +60,7 @@ The hardware used is qa2.</description>
               <properties>cloudsource=$cloudsource
 scenario_url=$scenario_url
 hw_number=2
+ssl_type=$ssl_type
 TESTHEAD=</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
