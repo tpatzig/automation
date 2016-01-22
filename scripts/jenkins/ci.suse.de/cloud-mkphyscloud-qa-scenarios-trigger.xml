@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <matrix-project plugin="matrix-project@1.6">
   <actions/>
-  <description/>
+  <description>Used for deploying all qa scenario files sequentialy located in github.com/suse-cloud/automation repo.&#13;
+The hardware used is qa2.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
@@ -104,12 +105,12 @@ def scenario_details = [
   "6a": [ file: "qa-scenario-6a-ipmi-kvm-docker.yaml",  job_name: "cloud-mkphyscloud-qa-scenario-6a" ]
 ]
 
-def result = [
+def params = [
   scenario_url: github_raw_url + ssl_type + "/" + scenario_details[scenario_name]["file"],
   job_name: scenario_details[scenario_name]["job_name"]
 ]
 
-return result
+return params
 </groovyScriptContent>
         <loadFilesFromMaster>false</loadFilesFromMaster>
       </info>
