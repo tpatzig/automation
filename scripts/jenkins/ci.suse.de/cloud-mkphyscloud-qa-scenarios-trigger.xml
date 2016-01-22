@@ -43,50 +43,44 @@
         <string>susecloud6</string>
       </values>
     </hudson.matrix.TextAxis>
-    <hudson.matrix.TextAxis>
-      <name>github_raw_url</name>
+    <hudson.matrix.LabelAxis>
+      <name>label</name>
       <values>
-        <string>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/</string>
+        <string>cloud-trigger</string>
       </values>
-    </hudson.matrix.TextAxis>
+    </hudson.matrix.LabelAxis>
   </axes>
   <builders/>
   <publishers/>
   <buildWrappers>
     <EnvInjectBuildWrapper plugin="envinject@">
       <info>
-        <groovyScriptContent>def scenario_files = [
-  "qa-scenario-1b-ipmi-kvm-xen.yaml",
-  "qa-scenario-2a-sbd-kvm.yaml",
-  "qa-scenario-2b-sbd-kvm-vmware.yaml",
-  "qa-scenario-2c-sbd-kvm.yaml",
-  "qa-scenario-6a-ipmi-kvm-docker.yaml"
+        <groovyScriptContent>def github_raw_url = "https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/"
+
+def scenario_details = [
+  "1b": [ file: "qa-scenario-1b-ipmi-kvm-xen.yaml",     job_name: "cloud-mkphyscloud-qa-scenario-1b" ],
+  "2a": [ file: "qa-scenario-2a-sbd-kvm.yaml",          job_name: "cloud-mkphyscloud-qa-scenario-2a" ],
+  "2b": [ file: "qa-scenario-2b-sbd-kvm-vmware.yaml",   job_name: "cloud-mkphyscloud-qa-scenario-2b" ],
+  "2c": [ file: "qa-scenario-2c-sbd-kvm.yaml",          job_name: "cloud-mkphyscloud-qa-scenario-2c" ],
+  "6a": [ file: "qa-scenario-6a-ipmi-kvm-docker.yaml",  job_name: "cloud-mkphyscloud-qa-scenario-6a" ]
 ]
 
-def scenario_url = ""
-
-switch (scenario_name) {
-  case "1b":
-     scenario_url = github_raw_url + ssl_type +  "qa-scenario-1b-ipmi-kvm-xen.yaml"
-     break
- 
-  case "2a":
-     scenario_url = github_raw_url + ssl_type +  "qa-scenario-1b-ipmi-kvm-xen.yaml"
-     break
-
-  default:
-     scenario_url = ""
+public String buildScenarioUrl() { 
+   return github_raw_url + ssl_type + "/" + scenario_details[scenario_name]["file"] ;
 }
 
-def map = [scenario_url: scenario_url]
+def result = [
+  scenario_url: github_raw_url + ssl_type + "/" + scenario_details[scenario_name]["file"],
+  job_name: scenario_details[scenario_name]["job_name"]
+]
 
-return map
+return result
 </groovyScriptContent>
         <loadFilesFromMaster>false</loadFilesFromMaster>
       </info>
     </EnvInjectBuildWrapper>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - $cloudsource - $ssl_type - $scenario_url</template>
+      <template>#${BUILD_NUMBER} - $cloudsource - $ssl_type - $scenario_name - $scenario_url</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
   <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
