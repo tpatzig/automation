@@ -40,7 +40,7 @@ FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (see 
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>develcloud6</defaultValue>
+          <defaultValue>susecloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>TESTHEAD</name>
@@ -212,7 +212,7 @@ fi
 
 if [ "$ret" = "0" ]; then
 
-echo "Running testsetup and cct from admin node..."
+echo "Running testsetup from admin node..."
 ssh root@$admin "
 export cloud=$cloud ; 
 export TESTHEAD=$TESTHEAD ;
@@ -242,7 +242,7 @@ if [ $ret != 0 ] ; then
     wait
     '
 
-$scp root@$admin:/var/log/*tbz $artifacts_dir/
+scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
 echo "mkphyscloud ret=$ret"

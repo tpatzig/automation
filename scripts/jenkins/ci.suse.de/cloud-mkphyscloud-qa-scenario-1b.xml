@@ -37,7 +37,7 @@ It will wipe all QA2 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>develcloud6</defaultValue>
+          <defaultValue>susecloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>TESTHEAD</name>
@@ -149,7 +149,7 @@ scp mkcloud.config root@$admin:
 ret=0
 
 ssh root@$admin "
-export cloud=$cloud ; 
+export cloud=qa2 ; 
 export UPDATEREPOS=$UPDATEREPOS ; 
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
 export TESTHEAD=$TESTHEAD ;
@@ -164,15 +164,14 @@ export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
 
-#FIXME test of Dirk's patch
-#wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
-wget --no-check-certificate -Oqa_crowbarsetup.sh "https://raw.githubusercontent.com/dirkmueller/automation/avoid_mixed_kvm_xen/scripts/qa_crowbarsetup.sh"
+
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands; onadmin_run_cct"
+timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands;"
 ' || ret=$?
 
 
