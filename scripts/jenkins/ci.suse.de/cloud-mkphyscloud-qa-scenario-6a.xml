@@ -37,7 +37,7 @@ It will wipe all QA2 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>develcloud6</defaultValue>
+          <defaultValue>susecloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>TESTHEAD</name>
@@ -162,7 +162,7 @@ if [ $ret != 0 ] ; then
     wait
     '
 
-$scp root@$admin:/var/log/*tbz $artifacts_dir/
+scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
 echo "mkphyscloud ret=$ret"
