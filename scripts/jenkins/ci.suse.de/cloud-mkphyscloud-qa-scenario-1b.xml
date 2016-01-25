@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>This job will redeploy the qa3.cloud with scenario-1b:&#13;
+  <description>This job will redeploy the qa2.cloud with scenario-1b:&#13;
  - 7 nodes&#13;
  - HA with IPMI (3 controllers&#13;
  - shared device for DB and rabbit &#13;
@@ -9,7 +9,7 @@
  - 2 kvm and 2 xen compute nodes&#13;
  - eveyrthing with SSL.&#13;
 &#13;
-It will wipe all QA3 machines!</description>
+It will wipe all QA2 machines!</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
