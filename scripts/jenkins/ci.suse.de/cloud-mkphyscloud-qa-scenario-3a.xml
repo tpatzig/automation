@@ -9,7 +9,7 @@
  - kvm and hyper-v&#13;
  - everything with SSL.&#13;
 &#13;
-It will wipe all QA3 machines!</description>
+It will wipe all QA2 machines!</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -57,7 +57,7 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
           <description>Name of the  QA cloud server (we have 2,3,4)</description>
-          <defaultValue>3</defaultValue>
+          <defaultValue>2</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hacloud</name>
@@ -92,7 +92,7 @@ It will wipe all QA3 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa-scenario-3a-kvm-hyperv.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/no-ssl/qa-scenario-3a-kvm-hyperv.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
@@ -142,7 +142,7 @@ sleep 100 # time for the admin VM to boot
 
 # wipe out shared NFS that should be used by this deployment
 
-ssh root@10.162.26.129 "/var/qa-scripts/wipe_qa3_share.sh"
+ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa$hw_number"
 
 
 # rest of code runs on admin node:
@@ -173,9 +173,25 @@ wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands; onadmin_run_cct"
+timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands;"
 ' || ret=$?
 
+if [ $ret != 0 ] ; then
+    ssh root@$admin '
+    set -x
+    for node in $(crowbar machines list | grep ^d) ; do
+    (
+        echo "Collecting supportconfig from $node"
+        timeout 400 ssh $node supportconfig | wc
+        timeout 300 scp $node:/var/log/\*tbz /var/log/
+    )&amp;
+    done
+    timeout 500 supportconfig | wc &amp;
+    wait
+    '
+
+$scp root@$admin:/var/log/*tbz $artifacts_dir/
+fi &gt;&amp;2
 
 echo "mkphyscloud ret=$ret"
 exit $ret
