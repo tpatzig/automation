@@ -269,7 +269,7 @@ if [ $ret != 0 ] ; then
     wait
     '
 
-$scp root@$admin:/var/log/*tbz $artifacts_dir/
+scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
 
