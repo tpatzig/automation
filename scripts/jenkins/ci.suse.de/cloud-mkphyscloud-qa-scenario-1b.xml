@@ -141,9 +141,7 @@ freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
 # wipe out shared NFS that should be used by this deployment
-
-ssh root@10.162.26.129 "/var/qa-scripts/wipe_qa2_share.sh"
-
+ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa2"
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config

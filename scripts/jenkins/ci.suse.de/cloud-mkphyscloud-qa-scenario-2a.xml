@@ -92,7 +92,7 @@ It will wipe all machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate setup_aliases waitcloud </defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate setup_aliases waitcloud</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
@@ -109,7 +109,7 @@ It will wipe all machines!</description>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
@@ -164,12 +164,12 @@ wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
+# first install the nodes and wait until the cloud is ready for further configuration steps
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
 ' || ret=$?
 
-echo "mkphyscloud ret=$ret (before scenario)"
+echo "mkphyscloud ret=$ret (before scenario and configuration)"
 
-# FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (because they could be called only after the deployment, which is bellow)
 
 if [ "$ret" = "0" ]; then
 
@@ -251,17 +251,25 @@ ssh root@$admin  "
   export scenario=scenario.yml "'
   
   ./sbd_prepare
-   
-  # crowbar_batch --timeout 2400 build scenario.yml
-  
-  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_batch;"
-  
-  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist testsetup; onadmin_run_cct;"
+ 
+  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup; onadmin_run_cct;"
   ' || ret=$?
 
 if [ $ret != 0 ] ; then
-        set +x
-        error_exit $ret "Deploying scenario 2a failed."
+    ssh root@$admin '
+    set -x
+    for node in $(crowbar machines list | grep ^d) ; do
+    (
+        echo "Collecting supportconfig from $node"
+        timeout 400 ssh $node supportconfig | wc
+        timeout 300 scp $node:/var/log/\*tbz /var/log/
+    )&amp;
+    done
+    timeout 500 supportconfig | wc &amp;
+    wait
+    '
+
+$scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
 

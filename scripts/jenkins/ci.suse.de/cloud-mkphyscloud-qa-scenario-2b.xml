@@ -94,7 +94,7 @@ It will wipe all machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/vmware-ca-file/scripts/scenarios/cloud6/qa-scenario-2b-sbd-kvm-vmware.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/vmware-ca-file/scripts/scenarios/cloud6/no-ssl/qa-scenario-2b-sbd-kvm-vmware.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -106,7 +106,7 @@ It will wipe all machines!</description>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
@@ -131,7 +131,6 @@ freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
 # wipe out shared NFS that should be used by this deployment
-
 ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa2"
 
 # rest of code runs on admin node:
@@ -167,7 +166,6 @@ timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $c
 
 echo "mkphyscloud ret=$ret (before scenario)"
 
-# FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (because they could be called only after the deployment, which is bellow)
 
 if [ "$ret" = "0" ]; then
 
@@ -223,9 +221,27 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
   
-  crowbar_batch --timeout 2400 build scenario.yml' || ret=$?
+  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup"
+  ' || ret=$?
 
-echo "mkphyscloud ret=$ret"
+if [ $ret != 0 ] ; then
+    ssh root@$admin '
+    set -x
+    for node in $(crowbar machines list | grep ^d) ; do
+    (
+        echo "Collecting supportconfig from $node"
+        timeout 400 ssh $node supportconfig | wc
+        timeout 300 scp $node:/var/log/\*tbz /var/log/
+    )&amp;
+    done
+    timeout 500 supportconfig | wc &amp;
+    wait
+    '
+
+$scp root@$admin:/var/log/*tbz $artifacts_dir/
+fi &gt;&amp;2
+
+
 
 fi
 
