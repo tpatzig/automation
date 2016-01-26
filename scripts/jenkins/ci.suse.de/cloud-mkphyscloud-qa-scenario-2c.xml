@@ -228,8 +228,10 @@ export nodenumber=$nodenumber ;
 export hacloud=$hacloud ; 
 export clusterconfig=$clusterconfig ; 
 export want_ceph=1 ;
-export cephvolumenumber=2
-export cct_tests=$cct_tests
+export cephvolumenumber=2;
+export cct_tests=$cct_tests;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export scenario=scenario.yml "'
 
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup;"
