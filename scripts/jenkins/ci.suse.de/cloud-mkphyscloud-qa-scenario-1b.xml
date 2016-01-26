@@ -109,6 +109,11 @@ It will wipe all QA2 machines!</description>
           <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description/>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -160,6 +165,8 @@ export clusterconfig=$clusterconfig ;
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
 export cct_tests=$cct_tests ;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'

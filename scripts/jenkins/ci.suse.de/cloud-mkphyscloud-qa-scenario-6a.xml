@@ -84,6 +84,11 @@ It will wipe all QA2 machines!</description>
           <description>Location of scenario YML file</description>
           <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/no-ssl/qa-scenario-6a-ipmi-kvm-docker.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description/>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -136,7 +141,9 @@ export runner_url=$runner_url ;
 export scenario_url=$scenario_url ; 
 export want_node_aliases=controller=3,kvm=2,docker=2
 export want_node_roles=controller=3,compute=4
-export scenario=/root/scenario.yml
+export scenario=/root/scenario.yml;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export commands=\"$commands\" "' 
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"

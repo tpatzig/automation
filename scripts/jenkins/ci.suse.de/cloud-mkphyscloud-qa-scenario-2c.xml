@@ -92,6 +92,11 @@ FIXME qa_crowbarsetup.sh currently does not have testsetup and cct steps!! (see 
           <description>Update repositories (one URL per line)</description>
           <defaultValue/>
         </hudson.model.TextParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description/>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -144,6 +149,8 @@ export want_node_aliases=controller=2,compute=2,ceph=3 ;
 export want_node_roles=controller=2,compute=2,storage=3 ;
 # export want_node_os=suse-12.1=4,suse-12.0=3 ; # SES-2.1 is now on SLE12SP1
 export want_ceph=1 ;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export cephvolumenumber=1 ;
 export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'

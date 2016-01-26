@@ -96,6 +96,11 @@ It will wipe all machines!</description>
           <description>Location of scenario YML file</description>
           <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/vmware-ca-file/scripts/scenarios/cloud6/no-ssl/qa-scenario-2b-sbd-kvm-vmware.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description/>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -151,6 +156,8 @@ export runner_url=$runner_url ;
 export scenario_url=$scenario_url ; 
 export want_node_aliases=controller=3,computekvm=2,computevmw=1 ;
 export want_node_roles=controller=3,compute=4 ;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'
 

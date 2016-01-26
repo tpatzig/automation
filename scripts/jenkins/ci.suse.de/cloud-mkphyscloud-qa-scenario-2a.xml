@@ -99,6 +99,11 @@ It will wipe all machines!</description>
           <description>Location of scenario YML file</description>
           <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-2a-sbd-kvm.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description>Run tempest smoke tests</description>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -155,6 +160,8 @@ export scenario_url=$scenario_url ;
 export want_node_aliases=controller=2,data=2,network=2,computekvm=1 ;
 export want_node_roles=controller=2,storage=2,network=2,compute=1 ;
 export scenario=\"scenario.yml\" ;
+export wanttempest=$wanttempest;
+export tempestoptions=$tempestoptions;
 export commands=\"$commands\" "'
 
 
