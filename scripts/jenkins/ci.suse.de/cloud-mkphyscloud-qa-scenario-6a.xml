@@ -143,7 +143,7 @@ export want_node_aliases=controller=3,kvm=2,docker=2
 export want_node_roles=controller=3,compute=4
 export scenario=/root/scenario.yml;
 export wanttempest=$wanttempest;
-export tempestoptions=$tempestoptions;
+export tempestoptions=\"$tempestoptions\";
 export commands=\"$commands\" "' 
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"

@@ -150,7 +150,7 @@ export want_node_roles=controller=2,compute=2,storage=3 ;
 # export want_node_os=suse-12.1=4,suse-12.0=3 ; # SES-2.1 is now on SLE12SP1
 export want_ceph=1 ;
 export wanttempest=$wanttempest;
-export tempestoptions=$tempestoptions;
+export tempestoptions=\"$tempestoptions\";
 export cephvolumenumber=1 ;
 export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'
@@ -231,7 +231,7 @@ export want_ceph=1 ;
 export cephvolumenumber=2;
 export cct_tests=$cct_tests;
 export wanttempest=$wanttempest;
-export tempestoptions=$tempestoptions;
+export tempestoptions=\"$tempestoptions\";
 export scenario=scenario.yml "'
 
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup;"

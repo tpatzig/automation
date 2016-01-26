@@ -157,7 +157,7 @@ export scenario_url=$scenario_url ;
 export want_node_aliases=controller=3,computekvm=2,computevmw=1 ;
 export want_node_roles=controller=3,compute=4 ;
 export wanttempest=$wanttempest;
-export tempestoptions=$tempestoptions;
+export tempestoptions=\"$tempestoptions\";
 export scenario=\"scenario.yml\" ;
 export commands=\"$commands\" "'
 
