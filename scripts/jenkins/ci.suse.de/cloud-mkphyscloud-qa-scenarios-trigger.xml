@@ -100,7 +100,7 @@ TESTHEAD=</properties>
         <groovyScriptContent>def github_raw_url = "https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/"
 
 def scenario_details = [
-  //no file "1a": [ file: "qa-scenario-1a-ha-kvm-swift.yaml",     job_name: "cloud-mkphyscloud-qa-scenario-1a" ],
+  "1a": [ file: "qa-scenario-1a-ha-kvm-swift.yaml",     job_name: "cloud-mkphyscloud-qa-scenario-1a" ],
   "1b": [ file: "qa-scenario-1b-ipmi-kvm-xen.yaml",     job_name: "cloud-mkphyscloud-qa-scenario-1b" ],
   "2a": [ file: "qa-scenario-2a-sbd-kvm.yaml",          job_name: "cloud-mkphyscloud-qa-scenario-2a" ],
   "2b": [ file: "qa-scenario-2b-sbd-kvm-vmware.yaml",   job_name: "cloud-mkphyscloud-qa-scenario-2b" ],
