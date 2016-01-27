@@ -127,9 +127,9 @@ It will wipe all QA2 machines!</description>
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>admin=crowbar$hw_number
-cloud=qa$hw_number
-tempestoptions="-t -s"
+      <command>export admin=crowbar$hw_number;
+export cloud=qa$hw_number;
+export tempestoptions="-t -s"
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
@@ -154,7 +154,7 @@ scp mkcloud.config root@$admin:
 ret=0
 
 ssh root@$admin "
-export cloud=qa2 ; 
+export cloud=$cloud ; 
 export UPDATEREPOS=$UPDATEREPOS ; 
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
 export TESTHEAD=$TESTHEAD ;
