@@ -42,7 +42,6 @@ The hardware used is qa2.</description>
       <name>ssl_type</name>
       <values>
         <string>no-ssl</string>
-        <string>ssl-insecure</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.LabelAxis>
