@@ -118,7 +118,7 @@ It will wipe all QA2 machines!</description>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
@@ -163,9 +163,7 @@ export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
 
-#FIXME test of Dirk's patch
-#wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
-wget --no-check-certificate -Oqa_crowbarsetup.sh "https://raw.githubusercontent.com/dirkmueller/automation/avoid_mixed_kvm_xen/scripts/qa_crowbarsetup.sh"
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
