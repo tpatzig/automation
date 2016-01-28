@@ -84,7 +84,7 @@ It will wipe all machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>runner_url</name>
           <description>The runner must be qa_crowbarsetup.sh file</description>
-          <defaultValue>https://raw.github.com/SUSE-Cloud/automation/master/scripts/qa_crowbarsetup.sh</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/dirkmueller/automation/fix_ipmi_reboot/scripts/qa_crowbarsetup.sh</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
