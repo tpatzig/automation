@@ -238,8 +238,6 @@ rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
 
-# disable test updates for SLES / HA / Storage
-export want_test_updates=0
 export automationrepo=~/github.com/SUSE-Cloud/automation
 export debug_qa_crowbarsetup=1
 export cephvolumenumber=1 # one disk is either cinder raw, ceph-osd or swift storage
