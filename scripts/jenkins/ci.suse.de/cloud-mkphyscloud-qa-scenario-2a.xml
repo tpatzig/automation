@@ -97,7 +97,7 @@ It will wipe all machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-2a-sbd-kvm.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/dirkmueller/automation/scenario_2a/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-2a-sbd-kvm.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>wanttempest</name>
@@ -168,6 +168,9 @@ export commands=\"$commands\" "'
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
+
+sed -i -e "s,##shared_nfs_for_database##,10.162.26.129:/var/$cloud/ha-database," scenario.yml
+sed -i -e "s,##shared_nfs_for_rabbitmq##,10.162.26.129:/var/$cloud/ha-rabbitmq," scenario.yml
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
