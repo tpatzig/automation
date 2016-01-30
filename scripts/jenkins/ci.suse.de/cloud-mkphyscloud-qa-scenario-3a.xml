@@ -161,10 +161,11 @@ export hacloud=$hacloud ;
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
+export wanthyperv=2 ; 
 export cct_tests=$cct_tests ;
 export want_node_aliases=dashboard=1,compute-kvm=2,compute-hyperv=2 ;
 export scenario=\"/root/scenario.yml\" ;
-export commands=\"$commands\" "'
+export commands=\"$commands\" "' 
 
  
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
