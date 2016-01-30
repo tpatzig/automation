@@ -162,7 +162,7 @@ export clusterconfig=$clusterconfig ;
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
 export cct_tests=$cct_tests ;
-export want_node_aliases=controller=3,compute-kvm=2,compute-xen=2 ;
+export want_node_aliases=dashboard=1,compute-kvm=2,compute-hyperv=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
 
