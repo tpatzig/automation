@@ -116,6 +116,8 @@ It will wipe all machines!</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
+# NOTE(toabctl): added by me for testing (2016-02-01)
+virtualcloud=$cloud
 tempestoptions="-t -s"
 vcenter_user="Administrator@vsphere.qa.suse.de"
 vcenter_password=`cat /home/jenkins/passwords/Administrator\@vsphere.qa.suse.de`
