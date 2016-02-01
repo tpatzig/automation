@@ -113,7 +113,7 @@ It will wipe all machines!</description>
 cloud=qa$hw_number
 tempestoptions="-t -s"
 vcenter_user="Administrator@vsphere.qa.suse.de"
-vcenter_password="O!dHacker5"
+vcenter_password=`cat /home/jenkins/passwords/Administrator\@vsphere.qa.suse.de`
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
