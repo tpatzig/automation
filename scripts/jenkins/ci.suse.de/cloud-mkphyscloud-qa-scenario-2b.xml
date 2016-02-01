@@ -116,8 +116,6 @@ It will wipe all machines!</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
-# NOTE(toabctl): added by me for testing (2016-02-01)
-virtualcloud=$cloud
 tempestoptions="-t -s"
 vcenter_user="Administrator@vsphere.qa.suse.de"
 vcenter_password=`cat /home/jenkins/passwords/Administrator\@vsphere.qa.suse.de`
@@ -188,7 +186,7 @@ if [ "$ret" = "0" ]; then
 # preparation of iSCSI
 zypper --gpg-auto-import-keys -p http://download.opensuse.org/repositories/devel:/languages:/python/SLE_12_SP1/ --non-interactive install python-sh
 
-wget --no-check-certificate https://raw.githubusercontent.com/aplanas/automation/master/scripts/iscsictl.py
+wget --no-check-certificate https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/iscsictl.py
 
 chmod +x iscsictl.py
 
@@ -232,8 +230,26 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
   
-  timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup"
-  ' || ret=$?
+if [ "$ret" = "0" ]; then
+
+echo "Running testsetup from admin node..."
+ssh root@$admin "
+export cloud=$cloud ; 
+export TESTHEAD=$TESTHEAD ;
+export cloudsource=$cloudsource ; 
+export nodenumber=$nodenumber ; 
+export hacloud=$hacloud ; 
+export clusterconfig=$clusterconfig ; 
+export want_ceph=1 ;
+export cephvolumenumber=2;
+export cct_tests=$cct_tests;
+export wanttempest=$wanttempest;
+export tempestoptions=\"$tempestoptions\";
+export scenario=scenario.yml "'
+
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch testsetup;"
+' || ret=$?
+
 
 if [ $ret != 0 ] ; then
     ssh root@$admin '
@@ -252,7 +268,7 @@ if [ $ret != 0 ] ; then
 scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
-
+echo "mkphyscloud ret=$ret"
 
 fi
 
