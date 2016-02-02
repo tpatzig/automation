@@ -230,6 +230,10 @@ EOSCRIPT
 
   ssh root@$admin './sbd_prepare
   
+' || ret=$?
+
+fi
+
 if [ "$ret" = "0" ]; then
 
 echo "Running testsetup from admin node..."
