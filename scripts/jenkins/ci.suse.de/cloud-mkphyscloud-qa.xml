@@ -132,7 +132,8 @@ Default: openvswitch</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
-tempestoptions="-t -s"
+tempestoptions="-N -t"
+wanttempest=1
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
@@ -166,6 +167,8 @@ export hacloud=$hacloud ;
 export clusterconfig=$clusterconfig ; 
 export runner_url=$runner_url ; 
 export cct_tests=$cct_tests ;
+export tempestoptions=\"$tempestoptions\" ;
+export wanttempest=$wanttempest;
 export commands=\"$commands\" "'
  
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
