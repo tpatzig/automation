@@ -91,7 +91,7 @@ It will wipe all QA2 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/dirkmueller/automation/scenario_1a/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-1a-ha-kvm-swift.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-1a-ha-kvm-swift.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
