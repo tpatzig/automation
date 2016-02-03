@@ -117,6 +117,16 @@ Default: openvswitch</description>
           <description>add update repos before crowbar install</description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>tempestoptions</name>
+          <description/>
+          <defaultValue>-s -t</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>wanttempest</name>
+          <description/>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -132,8 +142,8 @@ Default: openvswitch</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
-tempestoptions="-N -t"
-wanttempest=1
+tempestoptions=$tempestoptions;
+wanttempest=$wanttempest
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
