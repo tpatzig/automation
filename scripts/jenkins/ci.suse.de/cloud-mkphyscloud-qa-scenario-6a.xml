@@ -137,7 +137,7 @@ export cloudsource=$cloudsource ;
 export nodenumber=$nodenumber ; 
 export hacloud=$hacloud ; 
 export clusterconfig=$clusterconfig ; 
-export want_docker = 1 ;
+export want_docker=1 ;
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
 export want_node_aliases=controller=3,kvm=2,docker=2
