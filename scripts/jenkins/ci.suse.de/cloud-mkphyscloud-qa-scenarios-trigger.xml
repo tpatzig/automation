@@ -12,6 +12,25 @@ The hardware used is qa2.</description>
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>cloudsource</name>
+          <description>mkcloud alias for repository to be used: develcloud6 or susecloud6</description>
+          <defaultValue>susecloud6</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TESTHEAD</name>
+          <description>Use the latest changes from staging, not set by default. Set only when using cloudsource develcloud</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>Use QA hardware, default is qa2 (value 2), other option is qa3 (value 3)</description>
+          <defaultValue>2</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
@@ -30,12 +49,6 @@ The hardware used is qa2.</description>
         <string>2b</string>
         <string>2c</string>
         <string>6a</string>
-      </values>
-    </hudson.matrix.TextAxis>
-    <hudson.matrix.TextAxis>
-      <name>cloudsource</name>
-      <values>
-        <string>susecloud6</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
@@ -59,9 +72,9 @@ The hardware used is qa2.</description>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=$cloudsource
 scenario_url=$scenario_url
-hw_number=2
+hw_number=$hw_number
 ssl_type=$ssl_type
-TESTHEAD=</properties>
+TESTHEAD=$TESTHEAD</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>$job_name</projects>
