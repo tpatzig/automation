@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<com.tikal.jenkins.plugins.multijob.MultiJobProject plugin="jenkins-multijob-plugin@">
+<project>
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
@@ -28,14 +28,14 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
     <hudson.triggers.TimerTrigger>
-      <spec>H 19 */2 * *</spec>
+      <spec>H 6 */2 * *</spec>
     </hudson.triggers.TimerTrigger>
     <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
-      <spec>H/5 * * * *</spec>
+      <spec>H/2 * * * *</spec>
       <triggerLabel>cloud-trigger</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
-          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/6:/Staging/images/iso/?regexp=x86_64</url>
+          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/4:/Staging/images/iso/?regexp=x86_64</url>
           <proxyActivated>false</proxyActivated>
           <checkStatus>false</checkStatus>
           <statusCode>200</statusCode>
@@ -57,60 +57,80 @@
       <command>echo starttime=$(date +%s) &gt; build_start_time
 </command>
     </hudson.tasks.Shell>
-    <com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
-      <phaseName>Standard Gate Checks (non-HA/OVS+Linuxbridge)</phaseName>
-      <phaseJobs>
-        <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>openstack-mkcloud</jobName>
-          <currParams>false</currParams>
-          <exposedSCM>false</exposedSCM>
-          <disableJob>false</disableJob>
-          <parsingRulesPath/>
-          <maxRetries>0</maxRetries>
-          <enableRetryStrategy>false</enableRetryStrategy>
-          <enableCondition>false</enableCondition>
-          <abortAllJob>false</abortAllJob>
-          <condition/>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
-            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
-              <properties>cloudsource=develcloud6
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>cloudsource=develcloud4
+TESTHEAD=1
 nodenumber=2
-mkcloudtarget=all_batch
-scenario=cloud6-2nodes-default.yml
-want_node_aliases=controller=1,compute-kvm=1
+mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
-          <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
-        </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-        <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>openstack-mkcloud</jobName>
-          <currParams>false</currParams>
-          <exposedSCM>false</exposedSCM>
-          <disableJob>false</disableJob>
-          <parsingRulesPath/>
-          <maxRetries>0</maxRetries>
-          <enableRetryStrategy>false</enableRetryStrategy>
-          <enableCondition>false</enableCondition>
-          <abortAllJob>false</abortAllJob>
-          <condition/>
+          <projects>openstack-mkcloud</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
-            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
-              <properties>cloudsource=develcloud6
-nodenumber=4
-want_ldap=1
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>cloudsource=develcloud4
+TESTHEAD=1
+nodenumber=3
 networkingplugin=linuxbridge
-mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <killPhaseOnJobResultCondition>FAILURE</killPhaseOnJobResultCondition>
-          <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
-        </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-      </phaseJobs>
-      <continuationCondition>SUCCESSFUL</continuationCondition>
-    </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
+          <projects>openstack-mkcloud</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers>
     <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@">
@@ -118,7 +138,7 @@ mkcloudtarget=all
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>project=Devel:Cloud:6
+              <properties>project=Devel:Cloud:4
 subproject=Staging
 packagefilter=crowbar python openstack patterns release-notes-suse-openstack-cloud suse-cloud-upgrade
 </properties>
@@ -138,5 +158,4 @@ packagefilter=crowbar python openstack patterns release-notes-suse-openstack-clo
     </hudson.plugins.parameterizedtrigger.BuildTrigger>
   </publishers>
   <buildWrappers/>
-  <pollSubjobs>false</pollSubjobs>
-</com.tikal.jenkins.plugins.multijob.MultiJobProject>
+</project>
