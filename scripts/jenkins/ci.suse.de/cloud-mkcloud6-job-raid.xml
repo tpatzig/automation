@@ -30,10 +30,9 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>TESTHEAD=1
 cloudsource=develcloud6
-nodenumber=3
-networkingplugin=openvswitch
-networkingmode=vlan
-want_dvr=1
+nodenumber=2
+controller_raid_volumes=2
+want_raidtype=raid1
 mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>

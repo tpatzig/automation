@@ -18,7 +18,7 @@
   <scm class="hudson.scm.NullSCM"/>
   <triggers class="vector">
     <hudson.triggers.TimerTrigger>
-      <spec>H 20 * * *</spec>
+      <spec>11 2 * * *</spec>
     </hudson.triggers.TimerTrigger>
   </triggers>
   <builders>
@@ -30,11 +30,10 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>TESTHEAD=1
 cloudsource=develcloud6
-nodenumber=3
-networkingplugin=openvswitch
-networkingmode=vlan
-want_dvr=1
-mkcloudtarget=all
+nodenumber=4
+networkingmode=vxlan
+hacloud=1
+mkcloudtarget=all_noreboot
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>

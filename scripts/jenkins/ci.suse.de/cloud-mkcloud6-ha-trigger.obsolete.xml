@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>Just a trigger to automatically trigger daily runs with docker enabled</description>
+  <description>Just a trigger to automatically trigger daily runs with reboot enabled (default is to not do reboots in order to save build time for regular runs).&#13;
+&#13;
+also trigger on publish of iso</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -48,8 +50,10 @@
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>cloudsource=develcloud6
-want_docker=1
-mkcloudtarget=all</properties>
+nodenumber=4
+mkcloudtarget=plain testsetup
+hacloud=1
+networkingmode=vxlan</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>openstack-mkcloud</projects>
