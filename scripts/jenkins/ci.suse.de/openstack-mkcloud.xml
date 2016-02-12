@@ -377,7 +377,7 @@ MKCLOUDTARGET=$mkcloudtarget
 
 if [ $WITHCROWBARREGISTER == "true" ] ; then
   export nodenumberlonelynode=1
-  MKCLOUDTARGET="$MKCLOUDTARGET setuplonelynodes crowbar_register"
+  MKCLOUDTARGET+=" setuplonelynodes crowbar_register"
 fi
 
 if [ -e mkcloud.pid ] ; then
@@ -390,6 +390,9 @@ mkcloudwrapper="${automationrepo}/scripts/mkcloudhost/allocpool ${automationrepo
 if grep -q "exec.*mkcloude" ${automationrepo}/scripts/mkcloudhost/allocpool ; then
     mkcloudwrapper=${automationrepo}/scripts/mkcloudhost/allocpool
 fi
+
+# Shut down the cloud to save resources
+MKCLOUDTARGET+=" cleanup"
 
 perl -e "alarm 4*60*60 ; exec '${mkcloudwrapper} bash -x ${automationrepo}/scripts/mkcloud setuphost $(echo -n $MKCLOUDTARGET) ' " | tee $artifacts_dir/mkcloud_short_stdout.log
 ret=${PIPESTATUS[0]}
@@ -405,9 +408,7 @@ if [[ $github_pr_sha ]] ; then
   trap "-" ERR
 fi
 
-
-# Shut down the cloud to save resources
-exec ${mkcloudwrapper} ${automationrepo}/scripts/mkcloud cleanup</command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
