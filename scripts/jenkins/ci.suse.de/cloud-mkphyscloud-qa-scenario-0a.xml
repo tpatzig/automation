@@ -108,7 +108,7 @@ export cloudsource=$cloudsource ;
 export nodenumber=$nodenumber ; 
 export runner_url=$runner_url ; 
 export scenario_url=$scenario_url ; 
-export want_node_aliases=controller=1,compute-kvm=4,storage-swift=2 ;
+export want_node_aliases=controller=1,compute-kvm=3,storage-cinder=1,storage-swift=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
 
