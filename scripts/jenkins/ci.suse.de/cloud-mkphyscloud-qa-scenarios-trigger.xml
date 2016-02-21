@@ -48,6 +48,7 @@ The hardware used is qa2.</description>
         <string>2a</string>
         <string>2b</string>
         <string>2c</string>
+        <string>3a</string>
         <string>6a</string>
       </values>
     </hudson.matrix.TextAxis>
