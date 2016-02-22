@@ -116,7 +116,6 @@ export artifacts_dir=$WORKSPACE/.artifacts
 rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
-cd /home/jenkins
 freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
@@ -158,7 +157,7 @@ sed -i -e "s,##shared_nfs_for_glance##,var/$cloud/ha-glance," scenario.yml
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
-timeout --signal=ALRM 150m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
