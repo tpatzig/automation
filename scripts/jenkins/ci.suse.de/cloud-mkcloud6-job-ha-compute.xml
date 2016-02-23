@@ -43,7 +43,7 @@
 cloudsource=develcloud6
 nodenumber=4
 hacloud=1
-mkcloudtarget=all_batch
+mkcloudtarget=all_batch_noreboot
 scenario=cloud6-4nodes-compute-ha.yml
 want_node_aliases=controller=2,compute=2
 UPDATEREPOS="http://download.suse.de/ibs/home:/yan_gao:/branches:/SUSE:/SLE-12-SP1:/Update:/Test/standard/"</properties>
