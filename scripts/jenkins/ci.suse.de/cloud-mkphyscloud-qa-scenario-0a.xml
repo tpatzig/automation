@@ -64,7 +64,12 @@ It will wipe all QA2 machines.</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch prepare_crowbar_upgrade</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch prepare_crowbar_upgrade crowbarbackup</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>upgrade_commands</name>
+          <description>Steps needed to start the upgrade process</description>
+          <defaultValue>prepare_crowbar_upgrade prepare_cloudupgrade</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
@@ -130,6 +135,16 @@ wget --no-check-certificate -Oscenario.yml "$scenario_url"
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands"
 ' || ret=$?
 
+scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir"
+
+ssh root@$admin "
+export cloud=$cloud ;   
+export TESTHEAD=$TESTHEAD ;
+export cloudsource=$upgrade_cloudsource ; 
+export nodenumber=$nodenumber ; 
+export upgrade_commands=\"$upgrade_commands\" "'
+timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $upgrade_commands"
+' || ret=$?
 
 if [ $ret != 0 ] ; then
     ssh $sshopts root@$admin '
