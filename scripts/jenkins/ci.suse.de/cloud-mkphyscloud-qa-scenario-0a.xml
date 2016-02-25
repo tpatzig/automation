@@ -74,7 +74,7 @@ It will wipe all QA2 machines.</description>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
           <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/cloud5-upgrade-scenario/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>wanttempest</name>
