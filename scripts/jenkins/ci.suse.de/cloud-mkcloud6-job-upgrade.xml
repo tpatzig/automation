@@ -35,7 +35,7 @@
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>TESTHEAD=1
 cloudsource=develcloud5
-upgrade_cloudsource=develcloud5
+upgrade_cloudsource=develcloud6
 nodenumber=2
 mkcloudtarget=plain_with_upgrade testsetup rebootcloud
 </properties>
