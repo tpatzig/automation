@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>This job will redeploy the qa2.cloud with scenario-0a:&#13;
+  <description>This job will deploy cloud 5 on the qa2.cloud and upgrade it to cloud 6:&#13;
  - 7 nodes&#13;
  - swift&#13;
  - nova (kvm)&#13;
  &#13;
-It will wipe all QA2 machines!</description>
+It will wipe all QA2 machines.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -64,7 +64,7 @@ It will wipe all QA2 machines!</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch prepare_crowbar_upgrade</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
@@ -75,6 +75,11 @@ It will wipe all QA2 machines!</description>
           <name>wanttempest</name>
           <description>Run smoke tempest tests</description>
           <defaultValue>0</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>upgrade_cloudsource</name>
+          <description>Set new cloudsource for upgrade process</description>
+          <defaultValue>develcloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
