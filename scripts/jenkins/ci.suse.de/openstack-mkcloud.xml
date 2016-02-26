@@ -92,9 +92,9 @@ results are analyzed by https://github.com/SUSE-Cloud/automation/blob/master/scr
         </hudson.model.ChoiceParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>github_pr</name>
-          <description>&lt;ORG/repo&gt;:&lt;PRID&gt;:&lt;SHA1&gt;:&lt;BRANCH&gt; of PR to be tested (SHA1 must be latest commit in PR)
-SHA1 introduced to prevent accidental run of external PRs code.
-Will notify the github PR with mkcloud test results</description>
+          <description>String is a ':' separated list of these vaules: $ORG/$repo:$PR_ID:$SHA1:$BRANCH:$context
+Note: SHA1 must be latest commit in PR, $context is optional (only use if multiple gating runs needed per PR)
+</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
@@ -321,7 +321,7 @@ ${automationrepo}/scripts/jenkins/update_automation #NO PARAMETERS HERE ANY MORE
 
 function mkcloudgating_trap()
 {
-    $ghs -a set-status -s "failure" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+    $ghs -a set-status -s "failure" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha --context $ghs_context
 }
 
 ## mkcloud github PR gating
@@ -330,13 +330,15 @@ if [[ $github_pr ]] ; then
     github_pr_repo=${github_opts[0]}
     github_pr_id=${github_opts[1]}
     github_pr_sha=${github_opts[2]}
-
+    github_pr_context=${github_opts[4]}
+    ghs_context=${github_pr_context:-ci.suse.de/openstack-mkcloud/gating}
+    
     echo "testing PR: https://github.com/$github_pr_repo/pull/$github_pr_id"
     ghs=${automationrepo}/scripts/github-status/github-status.rb
     zypper -n install "rubygem(netrc)" "rubygem(octokit)"
 
     if ! $ghs -r $github_pr_repo -a is-latest-sha -p $github_pr_id -c $github_pr_sha ; then
-        $ghs -a set-status -s "error" -t $BUILD_URL -r $github_pr_repo -c $github_pr_sha -m "SHA1 mismatch, newer commit exists"
+        $ghs -a set-status -s "error" -t $BUILD_URL -r $github_pr_repo -c $github_pr_sha -m "SHA1 mismatch, newer commit exists" --context $ghs_context
         exit 1
     fi
 
@@ -363,7 +365,7 @@ if [[ $github_pr ]] ; then
         export want_cct_pr=$github_pr_id
     fi
 
-    $ghs -a set-status -s "pending" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha
+    $ghs -a set-status -s "pending" -r $github_pr_repo -t $BUILD_URL -c $github_pr_sha --context $ghs_context
     
 fi
 
@@ -404,7 +406,7 @@ fi
 
 # report mkcloud-gating status
 if [[ $github_pr_sha ]] ; then
-  $ghs -r $github_pr_repo -a set-status -s "success" -t $BUILD_URL -c $github_pr_sha
+  $ghs -r $github_pr_repo -a set-status -s "success" -t $BUILD_URL -c $github_pr_sha --context $ghs_context
   trap "-" ERR
 fi
 
