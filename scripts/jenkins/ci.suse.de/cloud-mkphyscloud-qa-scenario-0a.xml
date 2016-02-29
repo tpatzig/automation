@@ -86,6 +86,16 @@ It will wipe all QA2 machines.</description>
           <description>Set new cloudsource for upgrade process</description>
           <defaultValue>develcloud6</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>UPDATEREPOS</name>
+          <description>Update repositories (one URL per line)</description>
+          <defaultValue/>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>UPDATEBEFOREINSTALL</name>
+          <description>add update repos before crowbar install</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -116,9 +126,17 @@ env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
 scp mkcloud.config root@$admin:
 ret=0
 
+if [ ! -z "$UPDATEREPOS" ] ; then
+  # testing update only makes sense with GMx and without TESTHEAD
+  unset TESTHEAD
+  export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
+fi
+
 ssh root@$admin "
 export cloud=$cloud ;   
 export TESTHEAD=$TESTHEAD ;
+export UPDATEREPOS=$UPDATEREPOS ; 
+export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
 export cloudsource=$cloudsource ; 
 export nodenumber=$nodenumber ; 
 export runner_url=$runner_url ; 
@@ -126,6 +144,8 @@ export scenario_url=$scenario_url ;
 export want_node_aliases=controller=1,compute-kvm=3,storage-cinder=1,storage-swift=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
+
+[ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
