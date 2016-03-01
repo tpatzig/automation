@@ -137,12 +137,15 @@ ${automationrepo}/scripts/jenkins/update_automation
 OBS_TYPE=${PROJECTSOURCE%%/*}
 OBS_PROJECT=${PROJECTSOURCE##*/}
 
-BUILD_DIST=SLE_12_SP1
+BUILD_DIST=SLE_12_SP2
 OSC_BUILD_ARCH=x86_64
 
 case $project in
   Devel:Cloud:[45]*)
     BUILD_DIST=SLE_11_SP3
+  ;;
+  Devel:Cloud:6*)
+    BUILD_DIST=SLE_12_SP1
   ;;
 esac
 
