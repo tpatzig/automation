@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<com.tikal.jenkins.plugins.multijob.MultiJobProject>
+<com.tikal.jenkins.plugins.multijob.MultiJobProject plugin="jenkins-multijob-plugin@">
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
-  <keepDependencies>false</keepDependencies>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <concurrentBuild>false</concurrentBuild>
-  <assignedNode>cloud-trigger</assignedNode>
-  <canRoam>false</canRoam>
-  <logRotator>
+  <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>7</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
-  <properties/>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+  </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <triggers class="vector">
+  <assignedNode>cloud-trigger</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
     <hudson.triggers.TimerTrigger>
       <spec>H 19 */2 * *</spec>
     </hudson.triggers.TimerTrigger>
-    <org.jenkinsci.plugins.urltrigger.URLTrigger>
+    <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
       <spec>H/5 * * * *</spec>
-      <labelRestriction>true</labelRestriction>
       <triggerLabel>cloud-trigger</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
@@ -39,8 +42,10 @@
           </contentTypes>
         </org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
       </entries>
+      <labelRestriction>true</labelRestriction>
     </org.jenkinsci.plugins.urltrigger.URLTrigger>
   </triggers>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>echo starttime=$(date +%s) &gt; build_start_time
@@ -48,13 +53,18 @@
     </hudson.tasks.Shell>
     <com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
       <phaseName>Standard Gate Checks (non-HA/OVS+Linuxbridge)</phaseName>
-      <continuationCondition>SUCCESSFUL</continuationCondition>
       <phaseJobs>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
           <jobName>openstack-mkcloud</jobName>
           <currParams>false</currParams>
+          <exposedSCM>false</exposedSCM>
+          <disableJob>false</disableJob>
+          <maxRetries>0</maxRetries>
+          <enableRetryStrategy>false</enableRetryStrategy>
+          <enableCondition>false</enableCondition>
+          <abortAllJob>false</abortAllJob>
           <configs>
-            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>TESTHEAD=1
 cloudsource=develcloud6
 nodenumber=2
@@ -64,12 +74,19 @@ want_node_aliases=controller=1,compute-kvm=1
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
+          <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
           <jobName>openstack-mkcloud</jobName>
           <currParams>false</currParams>
+          <exposedSCM>false</exposedSCM>
+          <disableJob>false</disableJob>
+          <maxRetries>0</maxRetries>
+          <enableRetryStrategy>false</enableRetryStrategy>
+          <enableCondition>false</enableCondition>
+          <abortAllJob>false</abortAllJob>
           <configs>
-            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters plugin="parameterized-trigger@">
               <properties>TESTHEAD=1
 cloudsource=develcloud6
 nodenumber=4
@@ -79,23 +96,32 @@ mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
+          <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
       </phaseJobs>
+      <continuationCondition>SUCCESSFUL</continuationCondition>
     </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
     <com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
       <phaseName>Extra Gate Checks (HA)</phaseName>
-      <continuationCondition>SUCCESSFUL</continuationCondition>
       <phaseJobs>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
           <jobName>cloud-mkcloud6-job-ha</jobName>
           <currParams>false</currParams>
+          <exposedSCM>false</exposedSCM>
+          <disableJob>false</disableJob>
+          <maxRetries>0</maxRetries>
+          <enableRetryStrategy>false</enableRetryStrategy>
+          <enableCondition>false</enableCondition>
+          <abortAllJob>false</abortAllJob>
           <configs/>
+          <buildOnlyIfSCMChanges>false</buildOnlyIfSCMChanges>
         </com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
       </phaseJobs>
+      <continuationCondition>SUCCESSFUL</continuationCondition>
     </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
   </builders>
   <publishers>
-    <hudson.plugins.parameterizedtrigger.BuildTrigger>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@">
       <configs>
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
           <configs>
@@ -108,6 +134,8 @@ packagefilter=crowbar python openstack patterns release-notes-suse-openstack-clo
             <hudson.plugins.parameterizedtrigger.FileBuildParameters>
               <propertiesFile>build_start_time</propertiesFile>
               <failTriggerOnMissing>true</failTriggerOnMissing>
+              <useMatrixChild>false</useMatrixChild>
+              <onlyExactRuns>false</onlyExactRuns>
             </hudson.plugins.parameterizedtrigger.FileBuildParameters>
           </configs>
           <projects>openstack-submit-project</projects>
@@ -118,4 +146,5 @@ packagefilter=crowbar python openstack patterns release-notes-suse-openstack-clo
     </hudson.plugins.parameterizedtrigger.BuildTrigger>
   </publishers>
   <buildWrappers/>
+  <pollSubjobs>false</pollSubjobs>
 </com.tikal.jenkins.plugins.multijob.MultiJobProject>
