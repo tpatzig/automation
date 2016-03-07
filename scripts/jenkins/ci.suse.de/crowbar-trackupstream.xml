@@ -114,7 +114,7 @@
       </values>
     </hudson.matrix.TextAxis>
   </axes>
-  <combinationFilter>!(       ( ["Devel:Cloud:4:Staging"].contains(project)  &amp;&amp;       ["crowbar-barclamp-manila"].contains(component)     )   ||      (       ["Devel:Cloud:4:Staging", "Devel:Cloud:5:Staging"].contains(project)  &amp;&amp;       ["openstack-dashboard-theme-SUSE", "crowbar-core", "crowbar-openstack", "crowbar-ha", "crowbar-hyperv", "crowbar-ceph", "release-notes-suse-openstack-cloud"].contains(component)      )   ||     (        ( ! ["Devel:Cloud:4:Staging", "Devel:Cloud:5:Staging"].contains(project) ) &amp;&amp;       component.startsWith('crowbar-barclamp-')  || ["suse-cloud-upgrade"].contains(component)    ) )</combinationFilter>
+  <combinationFilter>!(       ( ["Devel:Cloud:4:Staging"].contains(project)  &amp;&amp;       ["crowbar-barclamp-manila"].contains(component)     )   ||      (       ["Devel:Cloud:4:Staging", "Devel:Cloud:5:Staging"].contains(project)  &amp;&amp;       ["openstack-dashboard-theme-SUSE", "crowbar-core", "crowbar-openstack", "crowbar-ha", "crowbar-hyperv", "crowbar-ceph", "release-notes-suse-openstack-cloud"].contains(component)      )   ||     (        ( ! ["Devel:Cloud:4:Staging", "Devel:Cloud:5:Staging"].contains(project) ) &amp;&amp;       component.startsWith('crowbar-barclamp-')  || ["suse-cloud-upgrade"].contains(component)    ) || ((["Devel:Cloud:7:Staging"].contains(project)) &amp;&amp; ["openstack-dashboard-theme-SUSE"].contains(component)))</combinationFilter>
   <builders>
     <hudson.tasks.Shell>
       <command>PROJECTSOURCE=IBS/${project}
