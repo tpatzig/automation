@@ -123,6 +123,7 @@ declare -a master_branches_old=(
 
 declare -a master_branches=(
     master
+    stable/3.0
 )
 
 for repo in ${crowbar_repos[@]}; do
