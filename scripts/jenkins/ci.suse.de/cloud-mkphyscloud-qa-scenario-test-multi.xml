@@ -126,39 +126,30 @@ It will wipe all QA2 machines!</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>echo "Running multi scenario"</command>
+      <command>echo "Running multi scenario"
+</command>
     </hudson.tasks.Shell>
-    <org.jenkinsci.plugins.conditionalbuildstep.ConditionalBuilder plugin="conditional-buildstep@">
+    <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
+      <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
+        <expression>${ENV,var="tempest"}</expression>
+        <label>smoke</label>
+      </condition>
+      <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
+        <configs>
+          <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+            <configs class="empty-list"/>
+            <projects>cloud-qa-test</projects>
+            <condition>ALWAYS</condition>
+            <triggerWithNoParameters>false</triggerWithNoParameters>
+            <block/>
+            <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+          </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+        </configs>
+      </buildStep>
       <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
-      <runCondition class="org.jenkins_ci.plugins.run_condition.contributed.ShellCondition" plugin="run-condition@1.0">
-        <command>if [[ $tempest == "smoke" ]]; then
-  "0";
-fi</command>
-      </runCondition>
-      <conditionalbuilders>
-        <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
-          <configs>
-            <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
-              <configs class="empty-list"/>
-              <projects>cloud-qa-test</projects>
-              <condition>ALWAYS</condition>
-              <triggerWithNoParameters>false</triggerWithNoParameters>
-              <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
-            </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
-          </configs>
-        </hudson.plugins.parameterizedtrigger.TriggerBuilder>
-      </conditionalbuilders>
-    </org.jenkinsci.plugins.conditionalbuildstep.ConditionalBuilder>
+    </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
   </builders>
   <publishers>
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts/>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>false</onlyIfSuccessful>
-      <fingerprint>false</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-      <caseSensitive>true</caseSensitive>
-    </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer plugin="mailer@">
       <recipients/>
       <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
