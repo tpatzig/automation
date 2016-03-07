@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <actions/>
+  <description>This job will redeploy the qa2.cloud with scenario-1a:&#13;
+ - 7 nodes&#13;
+ - HA with IPMI (3 controllers&#13;
+ - shared device for DB and rabbit &#13;
+ - swift&#13;
+ &#13;
+&#13;
+It will wipe all QA2 machines!</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.security.AuthorizationMatrixProperty>
+      <permission>hudson.scm.SCM.Tag:cloud</permission>
+      <permission>hudson.model.Run.Delete:cloud</permission>
+      <permission>hudson.model.Item.Read:anonymous</permission>
+      <permission>hudson.model.Item.Read:cloud</permission>
+      <permission>hudson.model.Item.Discover:cloud</permission>
+      <permission>hudson.model.Item.Build:cloud</permission>
+      <permission>hudson.model.Item.Cancel:cloud</permission>
+      <permission>hudson.model.Item.Workspace:cloud</permission>
+      <permission>hudson.model.Item.Delete:cloud</permission>
+      <permission>hudson.model.Item.Configure:cloud</permission>
+      <permission>hudson.model.Run.Update:cloud</permission>
+    </hudson.security.AuthorizationMatrixProperty>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>cloudsource</name>
+          <description/>
+          <defaultValue>develcloud6</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TESTHEAD</name>
+          <description>if non-empty, test latest version from Devel:Cloud Staging</description>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cct_tests</name>
+          <description>Run cct</description>
+          <defaultValue>features:base</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>want_ceph</name>
+          <description>Install ceph barclamp</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>Name of the  QA cloud server (we have 2,3,4)</description>
+          <defaultValue>2</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>hacloud</name>
+          <description>By default we don't want HA configured and installed</description>
+          <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>clusterconfig</name>
+          <description>HA configuration for clusters. Make sense only if ha=1</description>
+          <defaultValue>services=3</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>nodenumber</name>
+          <description>Default nodenumber is 7 as the qa2 cloud is the default here and it has 7 nodes. Cloud qa3 has 8 nodes</description>
+          <defaultValue>7</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>want_ipmi</name>
+          <description/>
+          <defaultValue>true</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>runner_url</name>
+          <description>The runner must be qa_crowbarsetup.sh file</description>
+          <defaultValue>https://raw.github.com/SUSE-Cloud/automation/master/scripts/qa_crowbarsetup.sh</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>commands</name>
+          <description>All the steps that needs to be completed to have cloud installed</description>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_url</name>
+          <description>Location of scenario YML file</description>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-1a-ha-kvm-swift.yaml</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>UPDATEREPOS</name>
+          <description>Update repositories (one URL per line)</description>
+          <defaultValue/>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>UPDATEBEFOREINSTALL</name>
+          <description>add update repos before crowbar install</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>WITHREBOOT</name>
+          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>tempest</name>
+          <description/>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo "Running multi scenario"</command>
+    </hudson.tasks.Shell>
+    <org.jenkinsci.plugins.conditionalbuildstep.ConditionalBuilder plugin="conditional-buildstep@">
+      <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
+      <runCondition class="org.jenkins_ci.plugins.run_condition.contributed.ShellCondition" plugin="run-condition@1.0">
+        <command>if [[ $tempest == "smoke" ]]; then
+  "0";
+fi</command>
+      </runCondition>
+      <conditionalbuilders>
+        <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+          <configs>
+            <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+              <configs class="empty-list"/>
+              <projects>cloud-qa-test</projects>
+              <condition>ALWAYS</condition>
+              <triggerWithNoParameters>false</triggerWithNoParameters>
+              <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+            </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          </configs>
+        </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+      </conditionalbuilders>
+    </org.jenkinsci.plugins.conditionalbuildstep.ConditionalBuilder>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts/>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.tasks.Mailer plugin="mailer@">
+      <recipients/>
+      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+</project>
