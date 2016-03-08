@@ -50,7 +50,12 @@ ssh root@$admin "
 " '
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
-  onadmin_testsetup;
+
+  if [ $testsetup == 'true' ] ; then 
+     onadmin_testsetup;
+  else
+     oncontroller_run_tempest;
+  fi
 '</command>
     </hudson.tasks.Shell>
   </builders>
