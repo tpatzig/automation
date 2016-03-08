@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description/>
+  <description>Runs a full tempest testsuite on a specified QA hardware.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
@@ -45,7 +45,7 @@
 cloud=qa$hw_number;
 
 ssh root@$admin "
-  export tempestoptions=\"-t -s\";
+  export tempestoptions=\"-t\";
   export cloud=$cloud;
 " '
   source mkcloud.config; 
@@ -58,7 +58,7 @@ ssh root@$admin "
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - qa$hw_number - tempest-smoke</template>
+      <template>#${BUILD_NUMBER} - qa$hw_number - tempest-full</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
