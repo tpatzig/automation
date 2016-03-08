@@ -126,12 +126,12 @@ It will wipe all QA2 machines!</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>echo "Running multi scenario"
+      <command>echo "Running scenario with multiple tests"
 </command>
     </hudson.tasks.Shell>
     <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
       <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
-        <expression>.*${ENV,var="tempest"}\\s.*</expression>
+        <expression>.*${ENV,var="tempest"}.*</expression>
         <label>smoke</label>
       </condition>
       <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
