@@ -131,7 +131,7 @@ It will wipe all QA2 machines!</description>
     </hudson.tasks.Shell>
     <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
       <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
-        <expression>(${ENV,var="tempest"})</expression>
+        <expression>.*${ENV,var="tempest"}\\s.*</expression>
         <label>smoke</label>
       </condition>
       <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
