@@ -32,7 +32,8 @@
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <canRoam>true</canRoam>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -40,9 +41,24 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>echo "succeeded"</command>
+      <command>admin=crowbar$hw_number;
+cloud=qa$hw_number;
+
+ssh root@$admin "
+  export tempestoptions=\"-t -s\";
+  export cloud=$cloud;
+" '
+  source mkcloud.config; 
+  source qa_crowbarsetup.sh; 
+  onadmin_testsetup;
+'</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
-  <buildWrappers/>
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+      <template>#${BUILD_NUMBER} - qa$hw_number - tempest-smoke</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
 </project>
