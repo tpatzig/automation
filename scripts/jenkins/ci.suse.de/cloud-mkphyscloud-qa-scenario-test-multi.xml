@@ -140,10 +140,10 @@ It will wipe all QA2 machines!</description>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
                 <properties>scenario_job_name=$JOB_NAME
-scenario_job_number=$BUILD_NUMBER</properties>
+scenario_build_number=$BUILD_NUMBER</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
-            <projects>cloud-qa-test</projects>
+            <projects>cloud-mkphyscloud-qa-tempest-smoke-job</projects>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block/>
