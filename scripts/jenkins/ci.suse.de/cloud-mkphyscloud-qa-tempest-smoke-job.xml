@@ -23,6 +23,11 @@
           <description>Scenario build number associated with this scenario jenkins job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>QA hardware to use to run the smoke tempest tests</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
