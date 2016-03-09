@@ -4,7 +4,7 @@
   <description>Maintains triggering tempest tests: smoke, defcore and full tesstuite.&#13;
 Has 2 mandatory attributes:&#13;
 * hw_number -&gt; number of the QA hardware&#13;
-* test type(s) -&gt; name of the test; accepted form: smoke|full|defcore. smoke is run always as first, then defcore and eventually full testsuite</description>
+* tempest test type(s) -&gt; name of the test; accepted form: smoke|full|defcore. smoke is run always as first, then defcore and eventually full testsuite</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
@@ -46,7 +46,7 @@ Has 2 mandatory attributes:&#13;
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_job_name</name>
-          <description>Optional; name of the scenario jenkins job that is used to trigger this tempest smoke test</description>
+          <description>Optional; name of the scenario jenkins job that is used to trigger this job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -54,6 +54,11 @@ Has 2 mandatory attributes:&#13;
           <description>Optional; scenario build number that triggered this job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>testsetup</name>
+          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -76,7 +81,8 @@ Has 2 mandatory attributes:&#13;
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>hw_number=$hw_number
+                <properties>testsetup=$testsetup
+hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
@@ -121,7 +127,8 @@ scenario_build_number=$BUILD_NUMBER</properties>
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>hw_number=$hw_number
+                <properties>testsetup=$testsetup
+hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
@@ -147,7 +154,8 @@ scenario_build_number=$BUILD_NUMBER</properties>
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>hw_number=$hw_number
+                <properties>testsetup=$testsetup
+hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
@@ -168,7 +176,7 @@ scenario_build_number=$BUILD_NUMBER</properties>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tempest-${tempest}</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
