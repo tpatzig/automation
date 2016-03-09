@@ -52,15 +52,17 @@ cloud=qa$hw_number;
 ssh root@$admin "
   export tempestoptions=\"-t -s\";
   export cloud=$cloud;
+  export testsetup=$testsetup;
 " '
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
+  echo $testsetup;
 
   if [ \"$testsetup\" == 'true' ] ; then 
      onadmin_testsetup;
   else
      get_novacontroller;
-     #oncontroller oncontroller_run_tempest;
+     oncontroller oncontroller_run_tempest;
   fi
 '</command>
     </hudson.tasks.Shell>
