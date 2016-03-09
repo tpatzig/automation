@@ -113,6 +113,11 @@ It will wipe all QA2 machines!</description>
           <description/>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_name</name>
+          <description>Scenario name, typically it's number with a single letter</description>
+          <defaultValue>10e</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -131,7 +136,7 @@ It will wipe all QA2 machines!</description>
     </hudson.tasks.Shell>
     <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
       <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
-        <expression>.*${ENV,var="tempest"}.*</expression>
+        <expression>${ENV,var="tempest"}</expression>
         <label>smoke</label>
       </condition>
       <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
@@ -139,11 +144,56 @@ It will wipe all QA2 machines!</description>
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>scenario_job_name=$JOB_NAME
+                <properties>scenario_name=$scenario_name
+scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
             <projects>cloud-mkphyscloud-qa-tempest-smoke-job</projects>
+            <condition>ALWAYS</condition>
+            <triggerWithNoParameters>false</triggerWithNoParameters>
+            <block>
+              <buildStepFailureThreshold>
+                <name>FAILURE</name>
+                <ordinal>2</ordinal>
+                <color>RED</color>
+                <completeBuild>true</completeBuild>
+              </buildStepFailureThreshold>
+              <unstableThreshold>
+                <name>FAILURE</name>
+                <ordinal>2</ordinal>
+                <color>RED</color>
+                <completeBuild>true</completeBuild>
+              </unstableThreshold>
+              <failureThreshold>
+                <name>FAILURE</name>
+                <ordinal>2</ordinal>
+                <color>RED</color>
+                <completeBuild>true</completeBuild>
+              </failureThreshold>
+            </block>
+            <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+          </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+        </configs>
+      </buildStep>
+      <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
+    </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
+    <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
+      <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
+        <expression>${ENV,var="tempest"}</expression>
+        <label>defcore</label>
+      </condition>
+      <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
+        <configs>
+          <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+            <configs>
+              <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+                <properties>scenario_name=$scenario_name
+scenario_job_name=$JOB_NAME
+scenario_build_number=$BUILD_NUMBER</properties>
+              </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+            </configs>
+            <projects>cloud-mkphyscloud-qa-tempest-defcore-job</projects>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block/>
@@ -154,13 +204,7 @@ scenario_build_number=$BUILD_NUMBER</properties>
       <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
     </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
   </builders>
-  <publishers>
-    <hudson.tasks.Mailer plugin="mailer@">
-      <recipients/>
-      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
-    </hudson.tasks.Mailer>
-  </publishers>
+  <publishers/>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">

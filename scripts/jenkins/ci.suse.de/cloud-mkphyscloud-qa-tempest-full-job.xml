@@ -14,8 +14,13 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
+          <name>scenario_name</name>
+          <description>Optional; scenario name which typically is an integer with a single letter</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>scenario_job_name</name>
-          <description>Name of the scenario jenkins job that is used to trigger this tempest smoke test</description>
+          <description>Optional; name of the scenario jenkins job that is used to trigger this tempest full test</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -25,12 +30,12 @@
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
-          <description>QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
+          <description>Mandatory; QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>testsetup</name>
-          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
+          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script; you need to run it only once for a cloud build;</description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
@@ -54,6 +59,7 @@ ssh root@$admin "
   export cloud=$cloud;
   export testsetup=$testsetup;
 " '
+  hostname -f;
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
   
@@ -70,7 +76,7 @@ ssh root@$admin "
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - qa$hw_number - tempest-full</template>
+      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tempest-full</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
