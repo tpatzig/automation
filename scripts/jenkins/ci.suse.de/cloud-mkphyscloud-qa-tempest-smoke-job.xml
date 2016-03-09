@@ -28,6 +28,11 @@
           <description>QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>testsetup</name>
+          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -51,11 +56,11 @@ ssh root@$admin "
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
 
-  if [ $testsetup == 'true' ] ; then 
-     onadmin_testsetup;
-  else
-     oncontroller_run_tempest;
-  fi
+  
+
+
+     oncontroller oncontroller_run_tempest;
+
 '</command>
     </hudson.tasks.Shell>
   </builders>
