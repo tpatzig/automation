@@ -52,10 +52,12 @@ cloud=qa$hw_number;
 ssh root@$admin "
   export tempestoptions=\"-t\";
   export cloud=$cloud;
+  export testsetup=$testsetup;
 " '
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
-  if [ $testsetup == 'true' ] ; then 
+  
+  if [ "$testsetup" == true ] ; then 
      onadmin_testsetup;
   else
      get_novacontroller;

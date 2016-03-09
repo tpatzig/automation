@@ -56,9 +56,8 @@ ssh root@$admin "
 " '
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
-  echo $testsetup;
 
-  if [ \"$testsetup\" == 'true' ] ; then 
+  if [ "$testsetup" == true ] ; then 
      onadmin_testsetup;
   else
      get_novacontroller;
