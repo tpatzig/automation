@@ -36,7 +36,7 @@
         <hudson.model.BooleanParameterDefinition>
           <name>testsetup</name>
           <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
-          <defaultValue>true</defaultValue>
+          <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
