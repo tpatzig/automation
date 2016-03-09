@@ -58,7 +58,8 @@ ssh root@$admin "
   if [ $testsetup == 'true' ] ; then 
      onadmin_testsetup;
   else
-     oncontroller_run_tempest;
+     get_novacontroller;
+     oncontroller oncontroller_run_tempest;
   fi
 '</command>
     </hudson.tasks.Shell>
