@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>Maintains triggering tests.&#13;
+  <description>Running this job makes sense only if you have installed your cloud with mkcloud, otherwise it will be failing as it depends on files that are created by mkcloud/qa_crowbarsetup.sh .&#13;
+Its goal is triggering tests.&#13;
+&#13;
 Has 1 mandatory attribute:&#13;
 * hw_number -&gt; number of the QA hardware&#13;
 &#13;
@@ -56,11 +58,6 @@ Has multiple optional attributes:&#13;
           <description>Optional; scenario build number that triggered this job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>testsetup</name>
-          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -83,7 +80,7 @@ Has multiple optional attributes:&#13;
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>testsetup=$testsetup
+                <properties>testsetup=true
 hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
@@ -129,8 +126,7 @@ scenario_build_number=$BUILD_NUMBER</properties>
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>testsetup=$testsetup
-hw_number=$hw_number
+                <properties>hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
@@ -156,8 +152,7 @@ scenario_build_number=$BUILD_NUMBER</properties>
           <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
             <configs>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-                <properties>testsetup=$testsetup
-hw_number=$hw_number
+                <properties>hw_number=$hw_number
 scenario_name=$scenario_name
 scenario_job_name=$JOB_NAME
 scenario_build_number=$BUILD_NUMBER</properties>
