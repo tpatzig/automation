@@ -83,8 +83,8 @@ Has multiple optional attributes:&#13;
                 <properties>testsetup=true
 hw_number=$hw_number
 scenario_name=$scenario_name
-scenario_job_name=$JOB_NAME
-scenario_build_number=$BUILD_NUMBER</properties>
+scenario_job_name=$scenario_job_name
+scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
             <projects>cloud-mkphyscloud-qa-tempest-smoke-job</projects>
@@ -128,8 +128,8 @@ scenario_build_number=$BUILD_NUMBER</properties>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
                 <properties>hw_number=$hw_number
 scenario_name=$scenario_name
-scenario_job_name=$JOB_NAME
-scenario_build_number=$BUILD_NUMBER</properties>
+scenario_job_name=$scenario_job_name
+scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
             <projects>cloud-mkphyscloud-qa-tempest-defcore-job</projects>
@@ -154,8 +154,8 @@ scenario_build_number=$BUILD_NUMBER</properties>
               <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
                 <properties>hw_number=$hw_number
 scenario_name=$scenario_name
-scenario_job_name=$JOB_NAME
-scenario_build_number=$BUILD_NUMBER</properties>
+scenario_job_name=$scenario_job_name
+scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
             <projects>cloud-mkphyscloud-qa-tempest-full-job</projects>
