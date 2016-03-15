@@ -141,7 +141,9 @@ for COMPONENT in `$OSC ls $COSS 2&gt;/dev/null | grep -E "^(${packagefilter// /|
     [[ "$COMPONENT" =~ -doc$ ]] || {
         $E $submitcmd $COSS $COMPONENT $COS || :
         
-        [ -n "$ECOS"] &amp;&amp; $E $submitcmd $COSS $COMPONENT $ECOS || :
+        if [[ "$COMPONENT" =~ "crow" ]];  then
+            [ -n "$ECOS" ] &amp;&amp; $E $submitcmd $COSS $COMPONENT $ECOS || :
+        fi 
     }    
   fi
 done</command>
