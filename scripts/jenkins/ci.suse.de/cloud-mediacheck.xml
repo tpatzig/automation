@@ -78,13 +78,8 @@ rm -f scripts/release-mgmt/*Media1.iso
 export RPM_DEPCHECK=1
 export SRCRPM_DEPCHECK=0
 
-if [[ "$project" == "Devel:Cloud:Shared:11-SP3:Update" ]]; then
+if [[ "$project" == "Devel:Cloud:Shared:11-SP3:Update" || "$project" =~ Devel:Cloud:.*:Appliances ]]; then
     export RPM_DEPCHECK_MEDIADEPS=" "
-    export SRCRPM_DEPCHECK_MEDIADEPS=" "
-    export INSTALLCHECK_EXTRA_OPTS="--exclude pattern:"
-elif [[ "$project" =~ Devel:Cloud:(.*):Appliances ]]; then
-    cloud_version=${BASH_REMATCH[1]}
-    export RPM_DEPCHECK_MEDIADEPS="solv/cloud-$cloud_version-dvd.solv solv/cloud-$cloud_version-updates.solv"
     export SRCRPM_DEPCHECK_MEDIADEPS=" "
     export INSTALLCHECK_EXTRA_OPTS="--exclude pattern:"
 fi
