@@ -1,48 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>Triggers (only triggers) mkcloud gating builds for pull requests to the github repos SUSE-Cloud/automation</description>
+  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>mode</name>
-          <description>normal: trigger unseen PRs
-rebuild: trigger unseend and pending PRs
-forcerebuild: trigger unseen, pending and failed PRs
-forceall: trigger rebuild for all open PRs</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>normal</string>
-              <string>rebuild</string>
-              <string>forcerebuild</string>
-              <string>forceall</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-  </properties>
-  <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-trigger</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-trigger</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <triggers class="vector">
     <hudson.triggers.TimerTrigger>
       <spec>H/30 * * * *</spec>
     </hudson.triggers.TimerTrigger>
   </triggers>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>## THIS IS A TRIGGER JOB ONLY - NO WORKER CODE IN HERE - DO NOT DARE TO ADD SOME
@@ -89,7 +67,7 @@ for repo in ${cloud_repos[@]}; do
         if [ "$github_pr_branch" = "master" ]; then
             # default config / may be overridden by tags from PR message
             mkcloudtarget=all_noreboot
-            cloudsource=develcloud6
+            cloudsource=develcloud7
             nodenumber=2
             networkingplugin=openvswitch
             #echo eval `$ghs -a get-pr-config -p $github_pr_sha` # not yet implemented

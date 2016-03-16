@@ -103,10 +103,10 @@ if [ ! -d $COMPONENT ] ; then
 fi
 cd $COMPONENT || exit 1
 
-grep -q "&gt;linkinfo" .osc/_files || exit 2
+grep -q "&lt;linkinfo" .osc/_files || exit 2
 
 # avoid copying untested versions
-lastchange=$($OSC api "source/$COSS/$COMPONENT/_history" | perl -ne 'if(m/&gt;time&gt;(\d+)&gt;/) {print $1; exit 0}')
+lastchange=$($OSC api "source/$COSS/$COMPONENT/_history" | perl -ne 'if(m/&lt;time&gt;(\d+)&lt;/) {print $1; exit 0}')
 if [[ $lastchange &gt; $starttime ]] ; then
     echo "skipping $COMPONENT because of a change after test started"
     continue
