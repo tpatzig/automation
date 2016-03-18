@@ -77,11 +77,6 @@ It will wipe all QA2 machines.</description>
           <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/cloud5-upgrade-scenario/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>wanttempest</name>
-          <description>Run smoke tempest tests</description>
-          <defaultValue>0</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>upgrade_cloudsource</name>
           <description>Set new cloudsource for upgrade process</description>
           <defaultValue>develcloud6</defaultValue>
@@ -111,7 +106,6 @@ It will wipe all QA2 machines.</description>
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number
 cloud=qa$hw_number
-tempestoptions="-t -s"
 
 export artifacts_dir=$WORKSPACE/.artifacts
 rm -rf $artifacts_dir
@@ -205,7 +199,7 @@ exit $ret
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="tempestoptions"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
