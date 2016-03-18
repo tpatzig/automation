@@ -146,10 +146,11 @@ rcnscd start;
 
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands";
 timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
-scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
 #timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
 
 ' || ret=$?
+
+scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
 
 # Now shutdown the old crowbar VM and spawn new VM for upgraded cloud
 
