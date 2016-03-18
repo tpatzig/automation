@@ -34,12 +34,7 @@ It will wipe all QA2 machines.</description>
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>develcloud5</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>TESTHEAD</name>
-          <description>if non-empty, test latest version from Devel:Cloud Staging</description>
-          <defaultValue>1</defaultValue>
+          <defaultValue>GM5+up</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
@@ -64,7 +59,7 @@ It will wipe all QA2 machines.</description>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch prepare_crowbar_upgrade crowbarbackup</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>upgrade_commands</name>
@@ -79,7 +74,7 @@ It will wipe all QA2 machines.</description>
         <hudson.model.StringParameterDefinition>
           <name>upgrade_cloudsource</name>
           <description>Set new cloudsource for upgrade process</description>
-          <defaultValue>develcloud6</defaultValue>
+          <defaultValue>GM6+up</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
