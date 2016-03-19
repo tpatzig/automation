@@ -163,6 +163,7 @@ ssh root@localhost "
  echo $admin;
  virsh destroy $admin;
  freshadminvm_cloud6 $admin qcow2;
+ sleep 100 # time for the admin VM to boot
 "
 
 ssh root@$admin "
