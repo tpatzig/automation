@@ -180,7 +180,7 @@ wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url";
 
-timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; onadmin_crowbarrestore \"with_upgrade\"; batch ";
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; onadmin_crowbarrestore \"with_upgrade\"; onadmin_batch ";
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
