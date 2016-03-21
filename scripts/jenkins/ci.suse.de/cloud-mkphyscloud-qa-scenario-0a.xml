@@ -141,11 +141,17 @@ wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
+# Fix for missing nscd in our admin node images
 zypper --non-interactive install nscd;
 rcnscd start;
 
+# Install cloud 5 first
 timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands";
+
+# Prepare cloud 5 for upgrade
 timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
+
+# This is failing with 404, is it intended to be run on cloud 5 or on upgraded cloud?
 #timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
 
 ' || ret=$?
