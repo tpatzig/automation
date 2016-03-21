@@ -186,7 +186,11 @@ wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
 
 wget --no-check-certificate -Oscenario.yml "$scenario_url";
 
-timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; onadmin_crowbarrestore \"with_upgrade\"; onadmin_batch ";
+# Install cloud 6 admin node
+timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; "
+
+# Restore admin node and re-apply the barclamps
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\"; onadmin_batch ";
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
