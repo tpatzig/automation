@@ -151,8 +151,8 @@ timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $c
 # Prepare cloud 5 for upgrade
 timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
 
-# This is failing with 404, is it intended to be run on cloud 5 or on upgraded cloud?
-#timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
+# Upgrade the nodes OS
+timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
 
 ' || ret=$?
 
