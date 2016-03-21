@@ -151,8 +151,6 @@ timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $c
 # Prepare cloud 5 for upgrade
 timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
 
-# Upgrade the nodes OS
-timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
 
 ' || ret=$?
 
@@ -190,7 +188,12 @@ wget --no-check-certificate -Oscenario.yml "$scenario_url";
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; "
 
 # Restore admin node and re-apply the barclamps
-timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\"; onadmin_batch ";
+timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\"; "
+
+# Upgrade the nodes OS
+timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
+
+# TODO Reapply the barclamps
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
