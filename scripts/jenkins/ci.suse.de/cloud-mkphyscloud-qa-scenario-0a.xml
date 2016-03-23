@@ -195,7 +195,7 @@ timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_no
 
 # TODO Reapply the barclamps
 timeout --signal=ALRM 90m  bash -x -c " source qa_crowbarsetup.sh ; \
-    for proposal in database rabbitmq keystone swift glance cinder neutron nova `horizon_barclamp` ceilometer heat tempest; do \
+    for proposal in database rabbitmq keystone swift glance cinder neutron nova horizon ceilometer heat tempest; do \
         update_one_proposal $proposal default \
     done"
 ' || ret=$?
