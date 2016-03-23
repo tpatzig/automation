@@ -198,7 +198,7 @@ timeout --signal=ALRM 90m  bash -x -c "
 
 source qa_crowbarsetup.sh ; 
 for proposal in database rabbitmq keystone swift glance cinder neutron nova `horizon_barclamp` ceilometer heat tempest; do
-        do_one_proposal $proposal \"default\"
+    update_one_proposal $proposal
 done
 
 "
