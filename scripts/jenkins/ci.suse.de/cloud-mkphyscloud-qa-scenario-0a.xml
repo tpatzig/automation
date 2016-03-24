@@ -67,11 +67,6 @@ It will wipe all QA2 machines.</description>
           <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/cloud5-upgrade-scenario/scripts/scenarios/cloud5/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>scenario_url_upgrade</name>
-          <description>Location of scenario YML file</description>
-          <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/cloud5-upgrade-scenario/scripts/scenarios/cloud6/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>upgrade_cloudsource</name>
           <description>Set new cloudsource for upgrade process</description>
           <defaultValue>GM6+up</defaultValue>
@@ -177,27 +172,19 @@ export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
 export upgrade_cloudsource=$upgrade_cloudsource ;
 export cloudsource=$upgrade_cloudsource ; 
 export runner_url=$runner_url ; 
-export scenario_url=$scenario_url_upgrade ;
 export nodenumber=$nodenumber "'
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
 
-wget --no-check-certificate -Oscenario.yml "$scenario_url";
-
 # Install cloud 6 admin node
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar; "
 
-# Restore admin node and re-apply the barclamps
+# Restore admin node
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\"; "
 
-# Upgrade the nodes OS
-timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
+# Upgrade the nodes OS and reapply barclamps
+timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist crowbar_nodeupgrade reapply_openstack_proposals;";
 
-# TODO Reapply the barclamps
-timeout --signal=ALRM 90m  bash -x -c " source qa_crowbarsetup.sh ; \
-    for proposal in database rabbitmq keystone swift glance cinder neutron nova horizon ceilometer heat tempest; do \
-        update_one_proposal \"$proposal\" default; \
-    done"
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
