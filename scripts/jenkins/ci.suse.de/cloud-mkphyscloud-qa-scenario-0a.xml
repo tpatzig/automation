@@ -183,7 +183,10 @@ timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist pre
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\"; "
 
 # Upgrade the nodes OS and reapply barclamps
-timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist crowbar_nodeupgrade reapply_openstack_proposals;";
+timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade;";
+
+# Reapply barclamps
+timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals;";
 
 ' || ret=$?
 
