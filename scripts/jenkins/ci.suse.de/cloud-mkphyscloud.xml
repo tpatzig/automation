@@ -125,7 +125,7 @@ exit $ret
       <caseSensitive>true</caseSensitive>
     </hudson.tasks.ArtifactArchiver>
     <hudson.tasks.Mailer plugin="mailer@">
-      <recipients>bwiedemann@suse.de</recipients>
+      <recipients>jdsn@suse.de</recipients>
       <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
       <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
