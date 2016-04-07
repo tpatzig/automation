@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>This job will deploy cloud 5 on the qa2.cloud and upgrade it to cloud 6:&#13;
- - 7 nodes&#13;
- - swift&#13;
- - nova (kvm)&#13;
- &#13;
-It will wipe all QA2 machines.</description>
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in &lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/jobs-ibs/'&gt;git&lt;/a&gt;&lt;/b&gt;
+
+This job will deploy cloud 5 on the qa2.cloud and upgrade it to cloud 6:
+  - 7 nodes
+  - swift
+  - nova (kvm)
+
+It will wipe all QA2 machines.
+&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <properties>
-    <hudson.security.AuthorizationMatrixProperty>
-      <permission>hudson.scm.SCM.Tag:cloud</permission>
-      <permission>hudson.model.Run.Delete:cloud</permission>
-      <permission>hudson.model.Item.Read:anonymous</permission>
-      <permission>hudson.model.Item.Read:cloud</permission>
-      <permission>hudson.model.Item.Discover:cloud</permission>
-      <permission>hudson.model.Item.Build:cloud</permission>
-      <permission>hudson.model.Item.Cancel:cloud</permission>
-      <permission>hudson.model.Item.Workspace:cloud</permission>
-      <permission>hudson.model.Item.Delete:cloud</permission>
-      <permission>hudson.model.Item.Configure:cloud</permission>
-      <permission>hudson.model.Run.Update:cloud</permission>
-    </hudson.security.AuthorizationMatrixProperty>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -38,12 +32,12 @@ It will wipe all QA2 machines.</description>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
-          <description>Name of the  QA cloud server (we have 2,3,4)</description>
+          <description>Name of the QA cloud server (we have 2,3,4)</description>
           <defaultValue>2</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>nodenumber</name>
-          <description>Default nodenumber is 7 as the qa2 cloud is the default here and it has 7 nodes. Cloud qa3 has 8 nodes</description>
+          <description>Number of nodes to use. Depends on hw_number</description>
           <defaultValue>7</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -63,7 +57,7 @@ It will wipe all QA2 machines.</description>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_url</name>
-          <description>Location of scenario YML file</description>
+          <description>Location of scenario yaml file</description>
           <defaultValue>https://raw.githubusercontent.com/vmoravec/automation/cloud5-upgrade-scenario/scripts/scenarios/cloud5/qa/no-ssl/qa-scenario-0a-kvm-swift.yaml</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -85,16 +79,10 @@ It will wipe all QA2 machines.</description>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>admin=crowbar$hw_number
+      <command>#!/bin/bash
+admin=crowbar$hw_number
 cloud=qa$hw_number
 
 export artifacts_dir=$WORKSPACE/.artifacts
@@ -117,15 +105,15 @@ if [ ! -z "$UPDATEREPOS" ] ; then
 fi
 
 ssh root@$admin "
-export cloud=$cloud ;   
+export cloud=$cloud ;
 export artifacts_dir=$artifacts_dir;
 export TESTHEAD=$TESTHEAD ;
-export UPDATEREPOS=$UPDATEREPOS ; 
-export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
-export cloudsource=$cloudsource ; 
-export nodenumber=$nodenumber ; 
-export runner_url=$runner_url ; 
-export scenario_url=$scenario_url ; 
+export UPDATEREPOS=$UPDATEREPOS ;
+export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
+export cloudsource=$cloudsource ;
+export nodenumber=$nodenumber ;
+export runner_url=$runner_url ;
+export scenario_url=$scenario_url ;
 export want_node_aliases=controller=1,compute-kvm=3,storage-cinder=1,storage-swift=2 ;
 export scenario=\"/root/scenario.yml\" ;
 export commands=\"$commands\" "'
@@ -146,7 +134,6 @@ timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $c
 # Prepare cloud 5 for upgrade
 timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
 
-
 ' || ret=$?
 
 scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
@@ -154,24 +141,24 @@ scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
 # Now shutdown the old crowbar VM and spawn new VM for upgraded cloud
 
 ssh root@localhost "
- hostname -f;
- virsh list --all;
- echo $admin;
- virsh destroy $admin;
- freshadminvm_cloud6 $admin qcow2;
- sleep 100 # time for the admin VM to boot
+hostname -f;
+virsh list --all;
+echo $admin;
+virsh destroy $admin;
+freshadminvm_cloud6 $admin qcow2;
+sleep 100 # time for the admin VM to boot
 "
 scp "$artifacts_dir"/backup-crowbar.tar.gz root@$admin:/tmp;
 
 ssh root@$admin "
-export cloud=$cloud ;   
+export cloud=$cloud ;
 export artifacts_dir=$artifacts_dir;
 export TESTHEAD=$TESTHEAD ;
-export UPDATEREPOS=$UPDATEREPOS ; 
-export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;  
+export UPDATEREPOS=$UPDATEREPOS ;
+export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
 export upgrade_cloudsource=$upgrade_cloudsource ;
-export cloudsource=$upgrade_cloudsource ; 
-export runner_url=$runner_url ; 
+export cloudsource=$upgrade_cloudsource ;
+export runner_url=$runner_url ;
 export nodenumber=$nodenumber "'
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
@@ -191,45 +178,31 @@ timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_op
 ' || ret=$?
 
 if [ $ret != 0 ] ; then
-    ssh $sshopts root@$admin '
-    set -x
-    for node in $(crowbar machines list | grep ^d) ; do
-    (
-        echo "Collecting supportconfig from $node"
-        timeout 400 ssh $node supportconfig | wc
-        timeout 300 scp $node:/var/log/\*tbz /var/log/
-    )&amp;
-    done
-    timeout 500 supportconfig | wc &amp;
-    wait
-    '
+  ssh $sshopts root@$admin '
+  set -x
+  for node in $(crowbar machines list | grep ^d) ; do
+  (
+  echo "Collecting supportconfig from $node"
+  timeout 400 ssh $node supportconfig | wc
+  timeout 300 scp $node:/var/log/\*tbz /var/log/
+  )&amp;
+  done
+  timeout 500 supportconfig | wc &amp;
+  wait
+  '
 
-scp root@$admin:/var/log/*tbz $artifacts_dir/
+  scp root@$admin:/var/log/*tbz $artifacts_dir/
 fi &gt;&amp;2
 
 exit $ret
 </command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>.artifacts/**</artifacts>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>false</onlyIfSuccessful>
-      <fingerprint>false</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-      <caseSensitive>true</caseSensitive>
-    </hudson.tasks.ArtifactArchiver>
-    <hudson.tasks.Mailer plugin="mailer@">
-      <recipients/>
-      <dontNotifyEveryUnstableBuild>true</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>false</sendToIndividuals>
-    </hudson.tasks.Mailer>
-  </publishers>
+  <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
-    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+      <template/>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>
 </project>

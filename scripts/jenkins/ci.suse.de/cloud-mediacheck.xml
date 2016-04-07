@@ -1,37 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<matrix-project plugin="matrix-project@1.4.1">
-  <actions/>
-  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
-  <keepDependencies>false</keepDependencies>
-  <properties>
-    <jenkins.model.BuildDiscarderProperty>
-      <strategy class="hudson.tasks.LogRotator">
-        <daysToKeep>-1</daysToKeep>
-        <numToKeep>24</numToKeep>
-        <artifactDaysToKeep>-1</artifactDaysToKeep>
-        <artifactNumToKeep>-1</artifactNumToKeep>
-      </strategy>
-    </jenkins.model.BuildDiscarderProperty>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
-  </properties>
-  <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-trackupstream</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-    <hudson.triggers.TimerTrigger>
-      <spec>@hourly</spec>
-    </hudson.triggers.TimerTrigger>
-  </triggers>
-  <concurrentBuild>false</concurrentBuild>
+<matrix-project>
+  <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
+    <runSequentially>false</runSequentially>
+  </executionStrategy>
+  <combinationFilter>(["Devel:Cloud:4", "Devel:Cloud:5", "Devel:Cloud:5/SLE_12", "Devel:Cloud:6", "Devel:Cloud:6/SLE_12_SP1", "Devel:Cloud:7/SLE_12_SP1" ].contains(project) || subproject == ":")</combinationFilter>
   <axes>
     <hudson.matrix.TextAxis>
       <name>project</name>
@@ -46,6 +18,7 @@
         <string>Devel:Cloud:Shared:11-SP3:Update</string>
         <string>SUSE:SLE-11-SP3:Update:Cloud5:Test</string>
         <string>SUSE:SLE-12-SP1:Update:Products:Cloud6/SLE_12_SP1</string>
+        <string>SUSE:SLE-12-SP2:Update:Products:Cloud7/SLE_12_SP1</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
@@ -62,7 +35,27 @@
       </values>
     </hudson.matrix.LabelAxis>
   </axes>
-  <combinationFilter>(["Devel:Cloud:4", "Devel:Cloud:5", "Devel:Cloud:5/SLE_12", "Devel:Cloud:6", "Devel:Cloud:6/SLE_12_SP1", "Devel:Cloud:7/SLE_12_SP1" ].contains(project) || subproject == ":")</combinationFilter>
+  <actions/>
+  <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-trackupstream</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>24</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <triggers class="vector">
+    <hudson.triggers.TimerTrigger>
+      <spec>@hourly</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
   <builders>
     <hudson.tasks.Shell>
       <command># temporary, similar to update_automation (not that advanced)
@@ -114,8 +107,4 @@ rm -r cloud/scripts/release-mgmt/*.iso
   </builders>
   <publishers/>
   <buildWrappers/>
-  <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
-    <runSequentially>false</runSequentially>
-    <sorter class="hudson.matrix.NoopMatrixConfigurationSorter"/>
-  </executionStrategy>
 </matrix-project>

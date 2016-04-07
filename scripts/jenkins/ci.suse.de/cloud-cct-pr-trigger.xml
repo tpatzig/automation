@@ -77,10 +77,17 @@ for repo in ${cloud_repos[@]}; do
             nodenumber=2
             networkingplugin=openvswitch
             ;;
-          cloud5)
+          cloud6)
             # default config / may be overridden by tags from PR message
             mkcloudtarget=all_noreboot
             cloudsource=develcloud6
+            nodenumber=2
+            networkingplugin=openvswitch
+            ;;
+          cloud5)
+            # default config / may be overridden by tags from PR message
+            mkcloudtarget=all_noreboot
+            cloudsource=develcloud5
             nodenumber=2
             networkingplugin=openvswitch
             ;;
