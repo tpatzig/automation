@@ -179,7 +179,7 @@ wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar"
 
 # Restore admin node
-#timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" "
+timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" "
 
 # Upgrade the nodes OS
 #timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade"
