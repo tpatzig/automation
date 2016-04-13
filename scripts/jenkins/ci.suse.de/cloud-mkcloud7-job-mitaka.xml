@@ -18,7 +18,7 @@
   <scm class="hudson.scm.NullSCM"/>
   <triggers class="vector">
     <hudson.triggers.TimerTrigger>
-      <spec>29 1 * * *</spec>
+      <spec>H 19 * * *'</spec>
     </hudson.triggers.TimerTrigger>
   </triggers>
   <builders>
@@ -29,9 +29,8 @@
             <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
               <properties>TESTHEAD=1
-cloudsource=develcloud6
+cloudsource=mitakacloud7
 nodenumber=2
-want_all_ssl=1
 mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
