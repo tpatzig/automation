@@ -18,8 +18,28 @@
   <scm class="hudson.scm.NullSCM"/>
   <triggers class="vector">
     <hudson.triggers.TimerTrigger>
-      <spec>H 19 * * *'</spec>
+      <spec>H H */2 * *</spec>
     </hudson.triggers.TimerTrigger>
+    <org.jenkinsci.plugins.urltrigger.URLTrigger>
+      <spec>H/5 * * * *</spec>
+      <labelRestriction>true</labelRestriction>
+      <triggerLabel>cloud-trigger</triggerLabel>
+      <entries>
+        <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
+          <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/7:/Mitaka/images/iso/?regexp=x86_64</url>
+          <proxyActivated>false</proxyActivated>
+          <checkStatus>false</checkStatus>
+          <statusCode>200</statusCode>
+          <timeout>300</timeout>
+          <checkETag>false</checkETag>
+          <checkLastModificationDate>false</checkLastModificationDate>
+          <inspectingContent>true</inspectingContent>
+          <contentTypes>
+            <org.jenkinsci.plugins.urltrigger.content.SimpleContentType/>
+          </contentTypes>
+        </org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
+      </entries>
+    </org.jenkinsci.plugins.urltrigger.URLTrigger>
   </triggers>
   <builders>
     <hudson.plugins.parameterizedtrigger.TriggerBuilder>
