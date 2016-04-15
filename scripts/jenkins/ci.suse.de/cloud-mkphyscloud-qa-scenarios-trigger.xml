@@ -74,7 +74,6 @@ The hardware used is qa2.</description>
               <properties>cloudsource=$cloudsource
 scenario_url=$scenario_url
 hw_number=$hw_number
-ssl_type=$ssl_type
 TESTHEAD=$TESTHEAD</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
@@ -110,7 +109,9 @@ TESTHEAD=$TESTHEAD</properties>
   <buildWrappers>
     <EnvInjectBuildWrapper plugin="envinject@">
       <info>
-        <groovyScriptContent>def github_raw_url = "https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/qa/"
+        <groovyScriptContent>def cloudversion = cloudsource =~ /\d+/
+
+def github_raw_url = "https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud${cloudversion[0]}/qa/"
 
 def scenario_details = [
   "1a": [ file: "qa-scenario-1a-ha-kvm-swift.yaml",     job_name: "cloud-mkphyscloud-qa-scenario-1a" ],
@@ -134,6 +135,8 @@ return params
     </EnvInjectBuildWrapper>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
       <template>#${BUILD_NUMBER} - $cloudsource - $ssl_type - $scenario_name</template>
+      <runAtStart>true</runAtStart>
+      <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
   <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
