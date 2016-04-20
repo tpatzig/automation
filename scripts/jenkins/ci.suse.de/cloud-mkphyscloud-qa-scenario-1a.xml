@@ -6,7 +6,7 @@
 This job will redeploy the qa2.cloud with scenario-1a:&#13;
   - 7 nodes&#13;
   - HA with IPMI (3 controllers&#13;
-  - shared device for Db and rabbit&#13;
+  - shared device for DB and rabbit&#13;
   - swift&#13;
 &#13;
 It will wipe all QA2 machines!&#13;
@@ -242,7 +242,7 @@ scenario_build_number=$BUILD_NUMBER
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - $cloudsource - - $scenario_name</template>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
