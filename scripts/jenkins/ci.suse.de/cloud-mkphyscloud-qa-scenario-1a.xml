@@ -233,10 +233,5 @@ scenario_build_number=$BUILD_NUMBER
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers/>
-  <buildWrappers>
-    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>${BUILD_NUMBER}: ${cloudsource}</template>
-    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
-  </buildWrappers>
+  <buildWrappers/>
 </project>
