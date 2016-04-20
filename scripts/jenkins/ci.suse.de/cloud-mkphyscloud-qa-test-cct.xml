@@ -39,9 +39,14 @@
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>cct_repo</name>
-          <description>cct repository</description>
+          <name>cct_git_url</name>
+          <description>Git repo url</description>
           <defaultValue>https://github.com/SUSE-Cloud/cct.git</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cct_checkout_branch</name>
+          <description>Git repo branch</description>
+          <defaultValue>master</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
