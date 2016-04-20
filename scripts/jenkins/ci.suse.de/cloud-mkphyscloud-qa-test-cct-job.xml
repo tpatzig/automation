@@ -68,6 +68,13 @@
     <hudson.tasks.Shell>
       <command>admin=crowbar$hw_number;
 cloud=qa$hw_number;
+cct_path="/root/github.com/SUSE-Cloud/cct";
+artifacts_dir=$WORKSPACE/.artifacts
+
+rm -rf $artifacts_dir
+mkdir -p $artifacts_dir
+touch $artifacts_dir/.ignore
+result=0
 
 ssh root@$admin "
   export cloud=$cloud;
@@ -79,10 +86,23 @@ ssh root@$admin "
   hostname -f;
   timeout --signal=ALRM 90m bash -x -c "source qa_crowbarsetup.sh; onadmin_run_cct"
 
-'</command>
+'|| result=$?
+
+scp root@$admin:$cct_path/log/cct.log $artifacts_dir/
+
+exit $result;</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>.artifacts/**</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+      <caseSensitive>true</caseSensitive>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">

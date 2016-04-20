@@ -175,8 +175,8 @@ scenario_build_number=$scenario_build_number</properties>
     </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
     <org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder plugin="conditional-buildstep@">
       <condition class="org.jenkins_ci.plugins.run_condition.core.ExpressionCondition" plugin="run-condition@1.0">
-        <expression>${ENV,var="cct_tests"}</expression>
-        <label>(?is).*</label>
+        <expression>.+</expression>
+        <label>${ENV,var="cct_tests"}</label>
       </condition>
       <buildStep class="hudson.plugins.parameterizedtrigger.TriggerBuilder" plugin="parameterized-trigger@2.30">
         <configs>
