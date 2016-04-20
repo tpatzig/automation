@@ -87,7 +87,7 @@ scenario_job_name=$scenario_job_name
 scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
-            <projects>cloud-mkphyscloud-qa-tempest-smoke-job</projects>
+            <projects>cloud-mkphyscloud-qa-test-tempest-smoke-job</projects>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block>
@@ -132,7 +132,7 @@ scenario_job_name=$scenario_job_name
 scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
-            <projects>cloud-mkphyscloud-qa-tempest-defcore-job</projects>
+            <projects>cloud-mkphyscloud-qa-test-tempest-defcore-job</projects>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block/>
@@ -158,7 +158,7 @@ scenario_job_name=$scenario_job_name
 scenario_build_number=$scenario_build_number</properties>
               </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
             </configs>
-            <projects>cloud-mkphyscloud-qa-tempest-full-job</projects>
+            <projects>cloud-mkphyscloud-qa-test-tempest-full-job</projects>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block/>
@@ -174,6 +174,8 @@ scenario_build_number=$scenario_build_number</properties>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
       <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tests</template>
+      <runAtStart>true</runAtStart>
+      <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>

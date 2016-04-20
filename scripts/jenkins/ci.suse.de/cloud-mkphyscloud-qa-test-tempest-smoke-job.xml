@@ -33,16 +33,11 @@
           <description>Mandatory; QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>cct_tests</name>
-          <description>List of tests separated by plus sign, e.g. features:base+feature:scale:cirros</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>cct_repo</name>
-          <description>cct repository</description>
-          <defaultValue>https://github.com/SUSE-Cloud/cct.git</defaultValue>
-        </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>testsetup</name>
+          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -60,14 +55,20 @@
 cloud=qa$hw_number;
 
 ssh root@$admin "
+  export tempestoptions=\"-t -s\";
   export cloud=$cloud;
-  export cct_tests=$cct_tests;
+  export testsetup=$testsetup;
 " '
   hostname -f;
   source mkcloud.config; 
   source qa_crowbarsetup.sh; 
 
-  onadmin_run_cct;
+  if [ "$testsetup" == true ] ; then 
+     onadmin_testsetup;
+  else
+     get_novacontroller;
+     oncontroller oncontroller_run_tempest;
+  fi
 '</command>
     </hudson.tasks.Shell>
   </builders>
@@ -75,7 +76,7 @@ ssh root@$admin "
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER}</template>
+      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tempest-smoke</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
