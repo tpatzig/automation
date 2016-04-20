@@ -106,7 +106,7 @@ exit $result;</command>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - ${hw_number} - ${cct_tests}</template>
+      <template>#${BUILD_NUMBER} - ${scenario_name} - cloud${hw_number} - ${cct_tests}</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
