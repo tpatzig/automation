@@ -33,11 +33,11 @@
           <description>Mandatory; QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>testsetup</name>
-          <description>Run tempest full within testsetup() in qa_crowbarsetup.sh script</description>
-          <defaultValue>true</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cct_tests</name>
+          <description>Coma separated list of test names, e.g. feature:base,feature:scale:cirros</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -76,7 +76,7 @@ ssh root@$admin "
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tempest-smoke</template>
+      <template>#${BUILD_NUMBER}</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
