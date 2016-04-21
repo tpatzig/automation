@@ -201,7 +201,7 @@ exit $ret
   <publishers/>
   <buildWrappers>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
-      <template/>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
     <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>

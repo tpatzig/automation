@@ -107,7 +107,7 @@ mkcloudtarget=all
       <phaseName>Extra Gate Checks (HA)</phaseName>
       <phaseJobs>
         <com.tikal.jenkins.plugins.multijob.PhaseJobsConfig>
-          <jobName>cloud-mkcloud6-job-ha</jobName>
+          <jobName>cloud-mkcloud7-job-ha</jobName>
           <currParams>false</currParams>
           <exposedSCM>false</exposedSCM>
           <disableJob>false</disableJob>
