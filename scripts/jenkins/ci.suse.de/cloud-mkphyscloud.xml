@@ -134,6 +134,8 @@ exit $ret
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
       <template>#${BUILD_NUMBER}: ${ENV,var="libvirt_type"}</template>
+      <runAtStart>true</runAtStart>
+      <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
   </buildWrappers>
 </project>
