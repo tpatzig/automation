@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>Running this job makes sense only if you have installed your cloud with mkcloud, otherwise it will be failing as it depends on files that are created by mkcloud/qa_crowbarsetup.sh .&#13;
+  <description>Running this job makes sense only if you have installed your cloud with mkcloud, otherwise it will be failing as it depends on files that are created by qa_crowbarsetup.sh .&#13;
 Its goal is triggering tests.&#13;
 &#13;
 Has 1 mandatory attribute:&#13;
@@ -36,13 +36,13 @@ Has multiple optional attributes:&#13;
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
           <name>tempest</name>
-          <description/>
+          <description>Optional; triggers tempest run; combinations of smoke, full and defcore, e.g. smoke|full</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_tests</name>
-          <description>Triggers cct tests. If the value is left empty, no cct tests will be run. The tests must be separated by + sign, e.g. feature:admin+feature:controller</description>
-          <defaultValue>features:base</defaultValue>
+          <description>Optional; triggers cct tests. If the value is left empty, no cct tests will be run. The tests must be separated by + sign, e.g. feature:admin+feature:controller</description>
+          <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
@@ -225,7 +225,7 @@ scenario_build_number=$scenario_build_number</properties>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
-      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - qa$hw_number - tests</template>
+      <template>#${BUILD_NUMBER} - ${scenario_name}-scenario - cloud$hw_number</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
