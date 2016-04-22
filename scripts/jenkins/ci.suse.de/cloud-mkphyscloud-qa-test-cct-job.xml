@@ -14,24 +14,9 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>scenario_name</name>
-          <description>Optional; scenario name which typically is an integer with a single letter</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>scenario_job_name</name>
-          <description>Optional; name of the scenario jenkins job that is used to trigger this tempest smoke test</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>scenario_build_number</name>
-          <description>Optional; scenario build number associated with this scenario jenkins job</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
           <description>Mandatory; QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
-          <defaultValue/>
+          <defaultValue>2</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_tests</name>
@@ -52,6 +37,21 @@
           <name>cct_skip_func_tests</name>
           <description>qa_crowbarsetup.sh runs all functional tests by default. Set to 0 if you want to run those tests</description>
           <defaultValue>1</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_name</name>
+          <description>Optional; scenario name which typically is an integer with a single letter</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_job_name</name>
+          <description>Optional; name of the scenario jenkins job that is used to trigger this tempest smoke test</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_build_number</name>
+          <description>Optional; scenario build number associated with this scenario jenkins job</description>
+          <defaultValue/>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>

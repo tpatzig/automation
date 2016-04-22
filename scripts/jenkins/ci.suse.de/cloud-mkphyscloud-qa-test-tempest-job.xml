@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description/>
+  <description>#TODO not yet decided if this should exist</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
@@ -38,6 +38,11 @@
           <description>Optional; scenario build number associated with this scenario jenkins job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>tempest</name>
+          <description/>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -51,7 +56,8 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>admin=crowbar$hw_number;
+      <command>
+admin=crowbar$hw_number;
 cloud=qa$hw_number;
 
 ssh root@$admin "
