@@ -8,7 +8,7 @@ Has 1 mandatory attribute:&#13;
 * hw_number -&gt; number of the QA hardware&#13;
 &#13;
 Has multiple optional attributes:&#13;
-* tempest -&gt; tempest test type(s); accepted form: smoke|full|defcore. smoke is run always as first, then defcore and eventually full testsuite&#13;
+* tempest -&gt; tempest test type(s);combinations of smoke, full and defcore, e.g. smoke|full; smoke is run always as first, then defcore and eventually full testsuite&#13;
 * cct -&gt; test name, e.g. features:base</description>
   <keepDependencies>false</keepDependencies>
   <properties>

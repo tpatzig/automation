@@ -73,7 +73,6 @@ artifacts_dir=$WORKSPACE/.artifacts
 
 rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
-touch $artifacts_dir/.ignore
 result=0
 
 ssh root@$admin "
