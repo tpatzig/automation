@@ -162,7 +162,6 @@ export runner_url=$runner_url ;
 export scenario_url=$scenario_url ;
 export want_node_aliases=controller=2,compute=2,ceph=3 ;
 export want_node_roles=controller=2,compute=2,storage=3 ;
-# export want_node_os=suse-12.1=4,suse-12.0=3 ; # SES-2.1 is now on SLE12SP1
 export want_ceph=1 ;
 export cephvolumenumber=1 ;
 export scenario=\"scenario.yml\" ;
@@ -219,7 +218,6 @@ if [ "$ret" = "0" ]; then
   export clusterconfig=$clusterconfig ;
   export want_ceph=1 ;
   export cephvolumenumber=1;
-  export cct_tests=$cct_tests;
   export scenario=scenario.yml "'
 
   timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist batch;"
