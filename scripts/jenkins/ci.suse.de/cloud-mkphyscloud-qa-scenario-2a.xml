@@ -237,6 +237,7 @@ if [ $ret == "0" ]; then
     ssh network1 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
     ssh network2 modprobe softdog; echo softdog &gt; /etc/modules-load.d/watchdog.conf
 
+    # ----- End of SBD
 EOSCRIPT
 
   chmod +x /tmp/sbd_prepare_$admin
@@ -275,7 +276,6 @@ EOSCRIPT
 
     scp root@$admin:/var/log/*tbz $artifacts_dir/
   fi &gt;&amp;2
-  
 fi
 
 exit $ret
