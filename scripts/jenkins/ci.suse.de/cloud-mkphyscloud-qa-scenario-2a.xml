@@ -15,7 +15,6 @@ This job will redeploy scenario-2b:&#13;
   - nova: ssl, libvirt migration enabled, shared storage, kvm kernel samepage merging, 1 KVM&#13;
   - cinder: Local file&#13;
   - neutron: linuxbridge&#13;
-  - everything with SSL.&#13;
 &#13;
 Warning: It will wipe all machines!&#13;
 &lt;!-- Managed by Jenkins Job Builder --&gt;</description>
@@ -188,7 +187,7 @@ timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $c
 
 echo "mkphyscloud ret=$ret (before scenario and configuration)"
 
-if [ "$ret" = "0" ]; then
+if [ $ret == "0" ]; then
   # ----- Prepare the SBD setup:
 
   cat &gt; /tmp/sbd_prepare_$admin &lt;&lt;EOSCRIPT
@@ -278,6 +277,7 @@ if [ "$ret" = "0" ]; then
     scp root@$admin:/var/log/*tbz $artifacts_dir/
   fi &gt;&amp;2
 fi
+
 exit $ret
 </command>
     </hudson.tasks.Shell>
