@@ -200,7 +200,7 @@ if [ "$ret" = "0" ]; then
     # take scenario yaml file and replace /dev/sda with the right thing:
     sed -i "s|/dev/sda|\${SBD_DEV}|g" scenario.yml
     # ----- End of SBD
-  EOSCRIPT
+EOSCRIPT
 
   chmod +x /tmp/sbd_prepare_$admin
   scp /tmp/sbd_prepare_$admin root@$admin:sbd_prepare
