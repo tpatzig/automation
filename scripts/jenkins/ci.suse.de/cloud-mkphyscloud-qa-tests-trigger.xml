@@ -97,12 +97,6 @@ scenario_build_number=$scenario_build_number</properties>
             <condition>ALWAYS</condition>
             <triggerWithNoParameters>false</triggerWithNoParameters>
             <block>
-              <buildStepFailureThreshold>
-                <name>FAILURE</name>
-                <ordinal>2</ordinal>
-                <color>RED</color>
-                <completeBuild>true</completeBuild>
-              </buildStepFailureThreshold>
               <unstableThreshold>
                 <name>FAILURE</name>
                 <ordinal>2</ordinal>

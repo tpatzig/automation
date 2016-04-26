@@ -254,7 +254,7 @@ export rally_server=backup.cloudadm.qa.suse.de
 export ZYPP_LOCK_TIMEOUT=120
 
 case $cloudsource in
-    GM4|GM4+up|GM5|GM5+up)
+    GM4|GM4+up|GM5|GM5+up|mitakacloud7)
         echo "Not setting want_ldap=1"
         ;;
     *)
