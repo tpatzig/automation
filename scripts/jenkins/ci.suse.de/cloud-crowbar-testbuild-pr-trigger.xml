@@ -7,6 +7,12 @@
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@">
+      <gitLabConnection>https://gitlab.suse.de</gitLabConnection>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+    <org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty plugin="gitlab-logo@">
+      <repositoryName/>
+    </org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
@@ -48,6 +54,7 @@ forceall: trigger rebuild for all open PRs</description>
       <command>## THIS IS A TRIGGER JOB ONLY - NO WORKER CODE IN HERE - DO NOT DARE TO ADD SOME
 ## TRIGGER JOBS ARE MOVED TO A DEDICATED TRIGGER NODE
 ## THIS JOB IS ABOUT PRs FOR THE CROWBAR REPOs
+[[ $NODE_NAME != 'cloud-trigger' ]] &amp;&amp; exit 99
 
 set -x
 
