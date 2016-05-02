@@ -30,6 +30,12 @@ results are analyzed by https://github.com/SUSE-Cloud/automation/blob/master/scr
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@">
+      <gitLabConnection>https://gitlab.suse.de</gitLabConnection>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+    <org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty plugin="gitlab-logo@">
+      <repositoryName/>
+    </org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
@@ -217,6 +223,11 @@ Currently only the 'batch' step uses such a file.</description>
         <hudson.model.StringParameterDefinition>
           <name>want_test_updates</name>
           <description>allow disabling of test updates</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>want_ceph</name>
+          <description>Install Ceph storage</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
