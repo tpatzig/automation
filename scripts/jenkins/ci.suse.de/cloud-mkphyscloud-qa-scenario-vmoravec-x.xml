@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <actions/>
+  <description>Just a test&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <builders/>
+  <publishers/>
+  <buildWrappers/>
+</project>
