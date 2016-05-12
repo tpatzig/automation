@@ -200,17 +200,17 @@ result=0
 # Install cloud 6 admin node
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar" || result=$?
 
-if [ $result != 0 ]; then
+if [ $result == 0 ]; then
 	# Restore admin node
   	timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" " || result=$?
 fi
 
-if [ $result != 0 ]; then
+if [ $result == 0 ]; then
 	# Upgrade the nodes OS
 	timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade" || result=$?
 fi
 
-if [ $result != 0 ]; then
+if [ $result == 0 ]; then
 	# Reapply barclamps
 	timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals" || result=$?
 fi
