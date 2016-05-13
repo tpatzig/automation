@@ -220,7 +220,10 @@ fi
 
 if [ $result == 0 ]; then
     # Make sure the nodes are in ready state
-    onadmin_waitcloud
+	timeout --signal=ALRM 10m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_waitcloud" || result=$?
+fi
+
+if [ $result == 0 ]; then
 	# Reapply barclamps
 	timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals" || result=$?
 fi
