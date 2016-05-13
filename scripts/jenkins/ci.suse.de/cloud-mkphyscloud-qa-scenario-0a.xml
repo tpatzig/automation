@@ -122,10 +122,14 @@ rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
 
-# Turn of the latests admin VM if it's running
-virsh destroy crowbar2.sles12sp1
+ssh root@localhost "
+	hostname -f;
+	virsh list --all;
+	# Turn of the cloud6 admin VM if it's running
+	virsh destroy crowbar2.sles12sp1    
+	freshadminvm $admin
+"
 
-freshadminvm $admin
 sleep 100 # time for the admin VM to boot
 
 # rest of code runs on admin node:
@@ -176,13 +180,14 @@ scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
 # Now shutdown the old crowbar VM and spawn new VM for upgraded cloud
 
 ssh root@localhost "
-hostname -f;
-virsh list --all;
-echo $admin;
-virsh destroy $admin;
-freshadminvm_cloud6 $admin qcow2;
-sleep 100 # time for the admin VM to boot
+	hostname -f;
+	virsh list --all;
+	echo $admin;
+	virsh destroy $admin;
+	freshadminvm_cloud6 $admin qcow2;
+	sleep 100 # time for the admin VM to boot
 "
+
 scp "$artifacts_dir"/backup-crowbar.tar.gz root@$admin:/tmp;
 
 ssh root@$admin "
