@@ -122,6 +122,9 @@ rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
 
+# Turn of the latests admin VM if it's running
+virsh destroy crowbar2.sles12sp1
+
 freshadminvm $admin
 sleep 100 # time for the admin VM to boot
 
