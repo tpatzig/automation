@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in&#13;
-&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;&#13;
-&lt;/b&gt;&#13;
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in
+&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;
+&lt;/b&gt;
 &lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <jenkins.model.BuildDiscarderProperty>
-      <strategy class="hudson.tasks.LogRotator">
-        <daysToKeep>-1</daysToKeep>
-        <numToKeep>7</numToKeep>
-        <artifactDaysToKeep>-1</artifactDaysToKeep>
-        <artifactNumToKeep>-1</artifactNumToKeep>
-      </strategy>
-    </jenkins.model.BuildDiscarderProperty>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@">
-      <gitLabConnection>https://gitlab.suse.de</gitLabConnection>
-    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
-    <org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty plugin="gitlab-logo@">
-      <repositoryName/>
-    </org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -102,6 +87,9 @@
         </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
@@ -123,14 +111,18 @@ mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
 
 ssh root@localhost "
-	hostname -f;
-	virsh list --all;
-	# Turn of the cloud6 admin VM if it's running
-	virsh destroy crowbar2.sles12sp1    
-	freshadminvm $admin
-"
+  export hw_number=$hw_number; "'
 
-sleep 100 # time for the admin VM to boot
+  hostname -f;
+  virsh list --all;
+  # Turn of the cloud6 admin VM if it is running
+  virsh destroy crowbar$hw_number.sles12sp1
+  freshadminvm $admin
+'
+
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
+source qa_crowbarsetup.sh
+wait_for 60 5 "nc -z $admin 22" 'admin node to start ssh daemon'
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
@@ -175,19 +167,21 @@ timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_cr
 
 ' || ret=$?
 
+# Backup the crowbar upgrade assets
 scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
 
 # Now shutdown the old crowbar VM and spawn new VM for upgraded cloud
-
 ssh root@localhost "
-	hostname -f;
-	virsh list --all;
-	echo $admin;
-	virsh destroy $admin;
-	freshadminvm_cloud6 $admin qcow2;
-	sleep 100 # time for the admin VM to boot
+  hostname -f;
+  virsh list --all;
+  echo $admin;
+  virsh destroy $admin;
+  freshadminvm_cloud6 $admin qcow2;
 "
 
+wait_for 60 5 "nc -z $admin 22" 'admin node to start ssh daemon'
+
+# Copy the upgrade assets back to admin node VM
 scp "$artifacts_dir"/backup-crowbar.tar.gz root@$admin:/tmp;
 
 ssh root@$admin "
@@ -209,23 +203,23 @@ result=0
 timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar" || result=$?
 
 if [ $result == 0 ]; then
-	# Restore admin node
-  	timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" " || result=$?
+  # Restore admin node
+    timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" " || result=$?
 fi
 
 if [ $result == 0 ]; then
-	# Upgrade the nodes OS
-	timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade" || result=$?
+  # Upgrade the nodes OS
+  timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade" || result=$?
 fi
 
 if [ $result == 0 ]; then
-    # Make sure the nodes are in ready state
-	timeout --signal=ALRM 10m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_waitcloud" || result=$?
+  # Make sure the nodes are in ready state
+  timeout --signal=ALRM 10m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_waitcloud" || result=$?
 fi
 
 if [ $result == 0 ]; then
-	# Reapply barclamps
-	timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals" || result=$?
+  # Reapply barclamps
+  timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals" || result=$?
 fi
 
 exit $result
@@ -296,11 +290,11 @@ scenario_build_number=$BUILD_NUMBER
   </builders>
   <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
       <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
   </buildWrappers>
 </project>
