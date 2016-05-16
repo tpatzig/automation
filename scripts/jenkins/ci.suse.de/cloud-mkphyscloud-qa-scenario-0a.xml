@@ -117,12 +117,13 @@ ssh root@localhost "
   virsh list --all;
   # Turn of the cloud6 admin VM if it is running
   virsh destroy crowbar$hw_number.sles12sp1
-  freshadminvm $admin
 '
+
+freshadminvm $admin
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 source qa_crowbarsetup.sh
-wait_for 60 5 "nc -z $admin 22" 'admin node to start ssh daemon'
+wait_for 10 5 "nc -z $admin 22" 'admin node to start ssh daemon'
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
