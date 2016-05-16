@@ -178,7 +178,7 @@ ssh root@localhost "
 
 freshadminvm_cloud6 $admin qcow2
 
-wait_for 10 5 "nc -z $admin 22" 'admin node to start ssh daemon'
+wait_for 10 10 "nc -z $admin 22" 'admin node to start ssh daemon'
 
 # Copy the upgrade assets back to admin node VM
 scp "$artifacts_dir"/backup-crowbar.tar.gz root@$admin:/tmp;
