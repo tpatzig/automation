@@ -153,7 +153,7 @@ export artifacts_dir=$artifacts_dir;
 export TESTHEAD=$TESTHEAD ;
 export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
-export cloudsource="develcloud5" ;
+export cloudsource=$cloudsource;
 echo $cloudsource;
 export nodenumber=$nodenumber ;
 export runner_url=$runner_url ;
