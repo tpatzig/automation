@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <actions/>
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in
+&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;
+&lt;/b&gt;
+&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>Mandatory, name of the QA cloud server as integer</description>
+          <defaultValue>2</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>tempest</name>
+          <description>Optional, specify what tempest test(s) to run, e.g. smoke, smoke|full or smoke|defcore</description>
+          <defaultValue>smoke</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cct</name>
+          <description>Optional, specify cct tests to run</description>
+          <defaultValue>features:base</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ssl_type</name>
+          <description>Mandatory, set the SSL configuration for the cloud, available options: no-ssl, ssl-insecure, ssl</description>
+          <defaultValue>no-ssl</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cloud_version</name>
+          <description>Mandatory, version of the cloud to be installed as integer</description>
+          <defaultValue>6</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_url</name>
+          <description>Location of scenario yaml file</description>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud$cloud_version/qa/$ssl_type/qa-scenario-0a.yaml</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cloudsource</name>
+          <description/>
+          <defaultValue>GM6+up</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>upgrade_cloudsource</name>
+          <description>Set new cloudsource for upgrade target</description>
+          <defaultValue>develcloud$(($cloud_version + 1))</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>nodenumber</name>
+          <description>Number of nodes to use. Depends on hw_number</description>
+          <defaultValue>7</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>want_ipmi</name>
+          <description/>
+          <defaultValue>true</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>runner_url</name>
+          <description>The runner must be qa_crowbarsetup.sh file</description>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/qa_crowbarsetup.sh</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>commands</name>
+          <description>All the steps that needs to be completed to have cloud installed</description>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>UPDATEREPOS</name>
+          <description>Update repositories (one URL per line)</description>
+          <defaultValue/>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>UPDATEBEFOREINSTALL</name>
+          <description>add update repos before crowbar install</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+admin=crowbar$hw_number
+cloud=qa$hw_number
+
+export artifacts_dir=$WORKSPACE/.artifacts
+rm -rf $artifacts_dir
+mkdir -p $artifacts_dir
+touch $artifacts_dir/.ignore
+
+ssh root@localhost "
+  hostname -f;
+  virsh list --all;
+  # Turn of the cloud6+5 admin VM if it is running
+  virsh destroy crowbar$hw_number.sles12sp1
+  virsh destroy crowbar$hw_number
+"
+
+freshadminvm_cloud6 $admin qcow2
+
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
+source qa_crowbarsetup.sh
+wait_for 10 5 "nc -z $admin 22" 'admin node to start ssh daemon'
+
+# rest of code runs on admin node:
+env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
+scp mkcloud.config root@$admin:
+ret=0
+
+if [ ! -z "$UPDATEREPOS" ] ; then
+  # testing update only makes sense with GMx and without TESTHEAD
+  unset TESTHEAD
+  export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
+fi
+
+ssh root@$admin "
+export cloud=$cloud ;
+export artifacts_dir=$artifacts_dir;
+export TESTHEAD=$TESTHEAD ;
+export UPDATEREPOS=$UPDATEREPOS ;
+export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
+export cloudsource=$cloudsource ;
+export nodenumber=$nodenumber ;
+export runner_url=$runner_url ;
+export scenario_url=$scenario_url ;
+export want_node_aliases=controller=1,compute-kvm=3,storage-cinder=1,storage-swift=2 ;
+export scenario=\"/root/scenario.yml\" ;
+export commands=\"$commands\" "'
+
+[ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
+
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
+
+wget --no-check-certificate -Oscenario.yml "$scenario_url"
+
+# Fix for missing nscd in our admin node images
+zypper --non-interactive install nscd;
+rcnscd start;
+
+# Install cloud 5 first
+timeout --signal=ALRM 240m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist $commands";
+
+# Prepare cloud 5 for upgrade
+timeout --signal=ALRM 30m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_prepare_crowbar_upgrade; safely onadmin_crowbarbackup \"with_upgrade\" ";
+
+' || ret=$?
+
+# Backup the crowbar upgrade assets
+scp root@$admin:/tmp/backup-crowbar.tar.gz "$artifacts_dir";
+
+# Now shutdown the old crowbar VM and spawn new VM for upgraded cloud
+ssh root@localhost "
+  hostname -f;
+  virsh list --all;
+  virsh destroy $admin.sles12sp1;
+"
+
+freshadminvm_cloud6 $admin qcow2
+
+wait_for 10 10 "nc -z $admin 22" 'admin node to start ssh daemon'
+
+# Copy the upgrade assets back to admin node VM
+scp "$artifacts_dir"/backup-crowbar.tar.gz root@$admin:/tmp;
+
+ssh root@$admin "
+export cloud=$cloud ;
+export artifacts_dir=$artifacts_dir;
+export TESTHEAD=$TESTHEAD ;
+export UPDATEREPOS=$UPDATEREPOS ;
+export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
+export upgrade_cloudsource=$upgrade_cloudsource ;
+export cloudsource=$upgrade_cloudsource ;
+export runner_url=$runner_url ;
+export nodenumber=$nodenumber "'
+
+wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url";
+
+result=0
+
+# Install cloud 6 admin node
+timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar installcrowbar" || result=$?
+
+if [ $result == 0 ]; then
+  # Restore admin node
+    timeout --signal=ALRM 60m bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbarrestore \"with_upgrade\" " || result=$?
+fi
+
+if [ $result == 0 ]; then
+  # Upgrade the nodes OS
+  timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_crowbar_nodeupgrade" || result=$?
+fi
+
+if [ $result == 0 ]; then
+  # Make sure the nodes are in ready state
+  timeout --signal=ALRM 10m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_waitcloud" || result=$?
+fi
+
+if [ $result == 0 ]; then
+  # Reapply barclamps
+  timeout --signal=ALRM 90m  bash -x -c ". qa_crowbarsetup.sh ; onadmin_reapply_openstack_proposals" || result=$?
+fi
+
+exit $result
+
+' || ret=$?
+
+if [ $ret != 0 ] ; then
+  ssh $sshopts root@$admin '
+  set -x
+  for node in $(crowbar machines list | grep ^d) ; do
+  (
+  echo "Collecting supportconfig from $node"
+  timeout 400 ssh $node supportconfig | wc
+  timeout 300 scp $node:/var/log/\*tbz /var/log/
+  )&amp;
+  done
+  timeout 500 supportconfig | wc &amp;
+  wait
+  '
+
+  scp root@$admin:/var/log/*tbz $artifacts_dir/
+fi &gt;&amp;2
+
+exit $ret
+</command>
+    </hudson.tasks.Shell>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>hw_number=$hw_number
+tempest=$tempest
+cct_tests=$cct
+scenario_name=0a
+scenario_job_name=$JOB_NAME
+scenario_build_number=$BUILD_NUMBER
+</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>cloud-mkphyscloud-qa-tests-trigger</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
+      <runAtStart>true</runAtStart>
+      <runAtEnd>true</runAtEnd>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
+  </buildWrappers>
+</project>
