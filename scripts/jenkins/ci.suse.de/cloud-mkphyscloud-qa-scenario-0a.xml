@@ -63,7 +63,7 @@
         <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>develcloud5</defaultValue>
+          <defaultValue>GM5+up</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>upgrade_cloudsource</name>
@@ -146,19 +146,21 @@ if [ ! -z "$UPDATEREPOS" ] ; then
   export UPDATEREPOS=${UPDATEREPOS//$'\n'/+}
 fi
 
-ssh root@$admin "
+echo "start ssh!!!"
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$admin "
 export cloud=$cloud ;
 export artifacts_dir=$artifacts_dir;
 export TESTHEAD=$TESTHEAD ;
 export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
 export cloudsource="develcloud5" ;
+echo $cloudsource;
 export nodenumber=$nodenumber ;
 export runner_url=$runner_url ;
 export scenario_url=$scenario_url ;
 export want_node_aliases=controller=1,compute-kvm=3,storage-cinder=1,storage-swift=2 ;
 export scenario=\"/root/scenario.yml\" ;
-export commands=\"$commands\" "'
+export commands=\"$commands\" ;"'
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
