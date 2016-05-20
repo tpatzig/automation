@@ -122,7 +122,7 @@ freshadminvm_cloud6 $admin qcow2
 
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 source qa_crowbarsetup.sh
-wait_for 10 5 "nc -z $admin 22" 'admin node to start ssh daemon'
+wait_for 10 10 "nc -z $admin 22" 'admin node to start ssh daemon'
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
