@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in&#13;
-&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;&#13;
-&lt;/b&gt;&#13;
-&#13;
-This job will redeploy scenario-2c:&#13;
-  - 7 nodes&#13;
-  - HA with SBD (2 nodes)&#13;
-  - DRBD&#13;
-  - ceph (3 nodes)&#13;
-  - 2 kvm compute nodes&#13;
-&#13;
-It will wipe all QA2 machines!&#13;
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in
+&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;
+&lt;/b&gt;
+
+This job will redeploy scenario-2c:
+  - 7 nodes
+  - HA with SBD (2 nodes)
+  - DRBD
+  - ceph (3 nodes)
+  - 2 kvm compute nodes
+
+It will wipe all QA2 machines!
 &lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <properties>
-    <jenkins.model.BuildDiscarderProperty>
-      <strategy class="hudson.tasks.LogRotator">
-        <daysToKeep>-1</daysToKeep>
-        <numToKeep>7</numToKeep>
-        <artifactDaysToKeep>-1</artifactDaysToKeep>
-        <artifactNumToKeep>-1</artifactNumToKeep>
-      </strategy>
-    </jenkins.model.BuildDiscarderProperty>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -117,13 +113,6 @@ It will wipe all QA2 machines!&#13;
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
@@ -244,7 +233,7 @@ fi
 exit $ret
 </command>
     </hudson.tasks.Shell>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder>
       <configs>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
@@ -261,6 +250,7 @@ scenario_build_number=$BUILD_NUMBER
           <projects>cloud-mkphyscloud-qa-tests-trigger</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -281,18 +271,15 @@ scenario_build_number=$BUILD_NUMBER
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
       </configs>
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
-    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
       <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
-      <runAtStart>true</runAtStart>
-      <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>
 </project>

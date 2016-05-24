@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in &lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/jobs-ibs/'&gt;git&lt;/a&gt;&lt;/b&gt;
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in
+&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;
+&lt;/b&gt;
 
-This job will redeploy the qa3.cloud with scenario-1b:
-  - 7 nodes
-  - HA with IPMI (3 controllers
-  - shared device for DB and rabbit
-  - swift
-  - kvm and hyper-v
-  - everything with SSL.
-
-It will wipe all QA2 machines!
+It will wipe all machines!
 &lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -29,29 +23,44 @@ It will wipe all QA2 machines!
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>Mandatory, name of the QA cloud server as integer</description>
+          <defaultValue>2</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>tempest</name>
+          <description>Optional, specify what tempest test(s) to run, e.g. smoke, smoke|full or smoke|defcore</description>
+          <defaultValue>smoke</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cct</name>
+          <description>Optional, specify cct tests to run</description>
+          <defaultValue>features:base</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ssl_type</name>
+          <description>Mandatory, set the SSL configuration for the cloud, available options: no-ssl, ssl-insecure, ssl</description>
+          <defaultValue>no-ssl</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>cloud_version</name>
+          <description>Mandatory, version of the cloud to be installed as integer</description>
+          <defaultValue>7</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_url</name>
+          <description>Location of scenario yaml file</description>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud$cloud_version/qa/$ssl_type/qa-scenario-3a.yaml</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>cloudsource</name>
           <description/>
-          <defaultValue>susecloud6</defaultValue>
+          <defaultValue>develcloud$cloud_version</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>TESTHEAD</name>
           <description>if non-empty, test latest version from Devel:Cloud Stagin</description>
-          <defaultValue>0</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>cct_tests</name>
-          <description>Run cct</description>
-          <defaultValue>features:base</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>want_ceph</name>
-          <description>Install ceph barclamp</description>
-          <defaultValue/>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>hw_number</name>
-          <description>Name of the QA cloud server (we have 2,3,4)</description>
-          <defaultValue>2</defaultValue>
+          <defaultValue>1</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>hacloud</name>
@@ -76,17 +85,12 @@ It will wipe all QA2 machines!
         <hudson.model.StringParameterDefinition>
           <name>runner_url</name>
           <description>The runner must be qa_crowbarsetup.sh file</description>
-          <defaultValue>https://raw.github.com/SUSE-Cloud/automation/master/scripts/qa_crowbarsetup.sh</defaultValue>
+          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/qa_crowbarsetup.sh</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>commands</name>
           <description>All the steps that needs to be completed to have cloud installed</description>
-          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch testsetup</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>scenario_url</name>
-          <description>Location of scenario yaml file</description>
-          <defaultValue>https://raw.githubusercontent.com/SUSE-Cloud/automation/master/scripts/scenarios/cloud6/no-ssl/qa-scenario-3a-kvm-hyperv.yaml</defaultValue>
+          <defaultValue>prepareinstallcrowbar installcrowbar allocate waitcloud setup_aliases batch</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>UPDATEREPOS</name>
@@ -98,11 +102,6 @@ It will wipe all QA2 machines!
           <description>add update repos before crowbar install</description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>WITHREBOOT</name>
-          <description>Enable reboots during the mkcloud run (incl. crowbar and compute node).</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -112,7 +111,6 @@ It will wipe all QA2 machines!
       <command>#!/bin/bash
 admin=crowbar$hw_number
 cloud=qa$hw_number
-tempestoptions="-t -s"
 
 if [ ! -z "$UPDATEREPOS" ] ; then
   # testing update only makes sense with GMx and without TESTHEAD
@@ -124,13 +122,11 @@ export artifacts_dir=$WORKSPACE/.artifacts
 rm -rf $artifacts_dir
 mkdir -p $artifacts_dir
 touch $artifacts_dir/.ignore
-cd /home/jenkins
 freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
 # wipe out shared NFS that should be used by this deployment
-
-ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa$hw_number"
+ssh root@localhost "wipe_nfs_shares qa$hw_number"
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
@@ -139,6 +135,7 @@ ret=0
 
 ssh root@$admin "
 export cloud=$cloud ;
+export hw_number=$hw_number ;
 export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
 export TESTHEAD=$TESTHEAD ;
@@ -148,7 +145,6 @@ export hacloud=$hacloud ;
 export clusterconfig=$clusterconfig ;
 export runner_url=$runner_url ;
 export scenario_url=$scenario_url ;
-export cct_tests=$cct_tests ;
 export want_node_aliases=controller=3,compute-kvm=2,compute-hyperv=2 ;
 export want_node_os=suse-12.1=5,hyperv-6.3=2 ;
 export scenario=\"/root/scenario.yml\" ;
@@ -157,7 +153,7 @@ export commands=\"$commands\" "'
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
-sed -i -e "s,##shared_nfs_for_glance##,var/$cloud/ha-glance," scenario.yml
+sed -i -e "s,##shared_nfs_for_glance##,10.162.31.220:/var/$cloud/ha-glance," scenario.yml
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
@@ -185,11 +181,52 @@ echo "mkphyscloud ret=$ret"
 exit $ret
 </command>
     </hudson.tasks.Shell>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder>
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>hw_number=$hw_number
+tempest=$tempest
+cct_tests=$cct
+scenario_name=3a
+scenario_job_name=$JOB_NAME
+scenario_build_number=$BUILD_NUMBER
+</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>cloud-mkphyscloud-qa-tests-trigger</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+              <completeBuild>true</completeBuild>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+              <completeBuild>true</completeBuild>
+            </failureThreshold>
+          </block>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers/>
   <buildWrappers>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
-      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"} (${ENV,var="nodenumber"}/${ENV,var="mkcloudtarget"} ${ENV,var="hacloud"})</template>
+      <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
     <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>

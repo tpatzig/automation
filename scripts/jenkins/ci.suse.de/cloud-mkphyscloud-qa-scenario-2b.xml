@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in&#13;
-&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;&#13;
-&lt;/b&gt;&#13;
-&#13;
-This job will redeploy the scenario-2b:&#13;
-  - total 7 nodes&#13;
-  - database: default, postgresql&#13;
-  - pacemaker: 1 cluster with 3 controllers&#13;
-  - nova: ssl, libvirt migration enabled, shared storage, kvm kernel samepage merging, 2 kvm and 2 ESXi compute nodes&#13;
-  - cinder: vmware&#13;
-  - neutron: vmware (but currently ovs as NSX plugin is kind of out of order)&#13;
-  - eveyrthing with SSL.&#13;
-&#13;
-Warning: It will wipe all machines!&#13;
+  <description>&lt;b&gt;This job is managed by JJB! Changes must be done in
+&lt;a href='https://github.com/SUSE-Cloud/automation/tree/master/scripts/jenkins/qa/'&gt;git&lt;/a&gt;
+&lt;/b&gt;
+
+This job will redeploy the scenario-2b:
+  - total 7 nodes
+  - database: default, postgresql
+  - pacemaker: 1 cluster with 3 controllers
+  - nova: ssl, libvirt migration enabled, shared storage, kvm kernel samepage merging, 2 kvm and 2 ESXi compute nodes
+  - cinder: vmware
+  - neutron: vmware (but currently ovs as NSX plugin is kind of out of order)
+  - eveyrthing with SSL.
+
+Warning: It will wipe all machines!
 &lt;!-- Managed by Jenkins Job Builder --&gt;</description>
   <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <properties>
-    <jenkins.model.BuildDiscarderProperty>
-      <strategy class="hudson.tasks.LogRotator">
-        <daysToKeep>-1</daysToKeep>
-        <numToKeep>7</numToKeep>
-        <artifactDaysToKeep>-1</artifactDaysToKeep>
-        <artifactNumToKeep>-1</artifactNumToKeep>
-      </strategy>
-    </jenkins.model.BuildDiscarderProperty>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -119,13 +115,6 @@ Warning: It will wipe all machines!&#13;
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
@@ -149,7 +138,7 @@ freshadminvm_cloud6 $admin qcow2
 sleep 100 # time for the admin VM to boot
 
 # wipe out shared NFS that should be used by this deployment
-ssh root@10.162.26.129 "/var/qa-scripts/wipe_nfs_shares.sh qa$hw_number"
+ssh root@localhost "wipe_nfs_shares qa$hw_number"
 
 # rest of code runs on admin node:
 env | grep -e networking -e libvirt -e cloud &gt; mkcloud.config
@@ -158,6 +147,7 @@ ret=0
 
 ssh root@$admin "
 export cloud=$cloud ;
+export hw_number=$hw_number ;
 export UPDATEREPOS=$UPDATEREPOS ;
 export UPDATEBEFOREINSTALL=$UPDATEBEFOREINSTALL ;
 export TESTHEAD=$TESTHEAD ;
@@ -175,8 +165,8 @@ export commands=\"$commands\" "'
 wget --no-check-certificate -Oqa_crowbarsetup.sh "$runner_url"
 wget --no-check-certificate -Oscenario.yml "$scenario_url"
 
-sed -i -e "s,##shared_nfs_for_database##,10.162.26.129:/var/$cloud/ha-database," scenario.yml
-sed -i -e "s,##shared_nfs_for_rabbitmq##,10.162.26.129:/var/$cloud/ha-rabbitmq," scenario.yml
+sed -i -e "s,##shared_nfs_for_database##,10.162.31.220:/var/$cloud/ha-database," scenario.yml
+sed -i -e "s,##shared_nfs_for_rabbitmq##,10.162.31.220:/var/$cloud/ha-rabbitmq," scenario.yml
 
 [ $UPDATEBEFOREINSTALL == "true" ] &amp;&amp; export updatesteps="addupdaterepo runupdate"
 
@@ -253,7 +243,7 @@ fi
 exit $ret
 </command>
     </hudson.tasks.Shell>
-    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@">
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder>
       <configs>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
@@ -270,6 +260,7 @@ scenario_build_number=$BUILD_NUMBER
           <projects>cloud-mkphyscloud-qa-tests-trigger</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
           <block>
             <buildStepFailureThreshold>
               <name>FAILURE</name>
@@ -290,18 +281,15 @@ scenario_build_number=$BUILD_NUMBER
               <completeBuild>true</completeBuild>
             </failureThreshold>
           </block>
-          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
         </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
       </configs>
     </hudson.plugins.parameterizedtrigger.TriggerBuilder>
   </builders>
   <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
-    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
       <template>#${BUILD_NUMBER}: ${ENV,var="cloudsource"}</template>
-      <runAtStart>true</runAtStart>
-      <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
   </buildWrappers>
 </project>
