@@ -38,7 +38,7 @@
     </hudson.triggers.TimerTrigger>
     <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
       <spec>H/5 * * * *</spec>
-      <triggerLabel>cloud-mkcloud-mkcha</triggerLabel>
+      <triggerLabel>cloud-trigger</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
           <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/5:/Staging/images/iso/?regexp=x86_64</url>
@@ -74,9 +74,6 @@ mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
-          <configFactories>
-            <org.jvnet.jenkins.plugins.nodelabelparameter.parameterizedtrigger.AllNodesBuildParameterFactory plugin="nodelabelparameter@"/>
-          </configFactories>
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
