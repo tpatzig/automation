@@ -2,17 +2,29 @@
 <project>
   <actions/>
   <description>&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
-  <logRotator class="hudson.tasks.LogRotator">
-    <daysToKeep>-1</daysToKeep>
-    <numToKeep>7</numToKeep>
-    <artifactDaysToKeep>-1</artifactDaysToKeep>
-    <artifactNumToKeep>-1</artifactNumToKeep>
-  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>7</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
     <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
       <doNotScan>false</doNotScan>
     </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@">
+      <gitLabConnection>https://gitlab.suse.de</gitLabConnection>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+    <org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty plugin="gitlab-logo@">
+      <repositoryName/>
+    </org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-trigger</assignedNode>
@@ -26,7 +38,7 @@
     </hudson.triggers.TimerTrigger>
     <org.jenkinsci.plugins.urltrigger.URLTrigger plugin="urltrigger@">
       <spec>H/5 * * * *</spec>
-      <triggerLabel>cloud-trigger</triggerLabel>
+      <triggerLabel>cloud-mkcloud-mkcha</triggerLabel>
       <entries>
         <org.jenkinsci.plugins.urltrigger.URLTriggerEntry>
           <url>http://clouddata.cloud.suse.de/cgi-bin/grep/download.suse.de/ibs/Devel:/Cloud:/5:/Staging/images/iso/?regexp=x86_64</url>
@@ -62,6 +74,9 @@ mkcloudtarget=plain crowbarbackup crowbarrestore testsetup
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
+          <configFactories>
+            <org.jvnet.jenkins.plugins.nodelabelparameter.parameterizedtrigger.AllNodesBuildParameterFactory plugin="nodelabelparameter@"/>
+          </configFactories>
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
