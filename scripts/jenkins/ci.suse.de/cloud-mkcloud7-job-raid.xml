@@ -27,7 +27,7 @@
     </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>cloud-mkcloud-mkcha</assignedNode>
+  <assignedNode>cloud-trigger</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -53,7 +53,6 @@ want_raidtype=raid1
 mkcloudtarget=all
 </properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-            <hudson.plugins.parameterizedtrigger.NodeParameters/>
           </configs>
           <projects>openstack-mkcloud</projects>
           <condition>ALWAYS</condition>
