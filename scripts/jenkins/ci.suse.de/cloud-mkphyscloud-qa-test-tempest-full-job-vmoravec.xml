@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <actions/>
+  <description>Runs tempest full on a specified QA hardware.
+Useful only for cloud that was built by mkcloud.
+Mandatory parameter: hw_number
+&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <keepDependencies>false</keepDependencies>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <concurrentBuild>false</concurrentBuild>
+  <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
+  <canRoam>false</canRoam>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>hw_number</name>
+          <description>Mandatory, number of the QA cloud server</description>
+          <defaultValue>2</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_name</name>
+          <description>Optional; scenario name which typically is an integer with a single letter</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_job_name</name>
+          <description>Optional; name of the scenario jenkins job that is used to trigger this job</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>scenario_build_number</name>
+          <description>Optional; scenario build number that triggered this job</description>
+          <defaultValue/>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>testsetup</name>
+          <description>Run tempest with testsetup() in qa_crowbarsetup.sh script</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+admin=crowbar$hw_number;
+cloud=qa$hw_number;
+
+ssh root@$admin "
+export tempestoptions=\"-t\";
+  export cloud=$cloud;
+  export testsetup=$testsetup;
+" '
+  hostname -f;
+  source mkcloud.config;
+  source qa_crowbarsetup.sh;
+
+  if [ "$testsetup" == true ] ; then
+     onadmin_testsetup;
+  else
+     get_novacontroller;
+     oncontroller oncontroller_run_tempest;
+  fi
+'
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+      <template>#${BUILD_NUMBER} - ${scenario_name} - qa$hw_number - defcore</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper/>
+  </buildWrappers>
+</project>
