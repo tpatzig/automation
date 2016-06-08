@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <actions/>
-  <description/>
+  <description>Runs cct tests
+Useful only for cloud that was built by mkcloud.
+Mandatory parameter: hw_number
+&lt;!-- Managed by Jenkins Job Builder --&gt;</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>7</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
-      <doNotScan>false</doNotScan>
-    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
           <name>hw_number</name>
-          <description>Mandatory; QA hardware to use to run the smoke tempest tests, e.g. 2, 3</description>
+          <description>Mandatory, number of the QA cloud server</description>
           <defaultValue>2</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_tests</name>
           <description>List of tests separated by plus sign, e.g. features:base+feature:scale:cirros</description>
-          <defaultValue/>
+          <defaultValue>features:base</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_git_url</name>
-          <description>Git repo url</description>
+          <description>Git repo url for cct</description>
           <defaultValue>https://github.com/SUSE-Cloud/cct.git</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_checkout_branch</name>
-          <description>Git repo branch</description>
+          <description>Git repo branch name</description>
           <defaultValue>master</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cct_skip_func_tests</name>
-          <description>qa_crowbarsetup.sh runs all functional tests by default. Set to 0 if you want to run those tests</description>
+          <description>qa_crowbarsetup.sh runs all functional tests by default. Set to 0 if you want to run those tests
+</description>
           <defaultValue>1</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -45,16 +48,19 @@
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_job_name</name>
-          <description>Optional; name of the scenario jenkins job that is used to trigger this tempest smoke test</description>
+          <description>Optional; name of the scenario jenkins job that is used to trigger this job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>scenario_build_number</name>
-          <description>Optional; scenario build number associated with this scenario jenkins job</description>
+          <description>Optional; scenario build number that triggered this job</description>
           <defaultValue/>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
+    <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@">
+      <doNotScan>false</doNotScan>
+    </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
@@ -66,7 +72,8 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>admin=crowbar$hw_number;
+      <command>#!/bin/bash
+admin=crowbar$hw_number;
 cloud=qa$hw_number;
 cct_path="/root/github.com/SUSE-Cloud/cct";
 artifacts_dir=$WORKSPACE/.artifacts
@@ -89,25 +96,17 @@ ssh root@$admin "
 
 scp root@$admin:$cct_path/log/cct.log $artifacts_dir/
 
-exit $result;</command>
+exit $result;
+</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>.artifacts/**</artifacts>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>false</onlyIfSuccessful>
-      <fingerprint>false</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-      <caseSensitive>true</caseSensitive>
-    </hudson.tasks.ArtifactArchiver>
-  </publishers>
+  <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
     <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@">
       <template>#${BUILD_NUMBER} - ${scenario_name} - cloud${hw_number} - ${cct_tests}</template>
       <runAtStart>true</runAtStart>
       <runAtEnd>true</runAtEnd>
     </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@"/>
   </buildWrappers>
 </project>
