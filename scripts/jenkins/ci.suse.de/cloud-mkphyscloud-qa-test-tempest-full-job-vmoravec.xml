@@ -8,7 +8,7 @@ Mandatory parameter: hw_number
   <keepDependencies>false</keepDependencies>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <assignedNode>cloud-mkphyscloud-gate-qa</assignedNode>
   <canRoam>false</canRoam>
   <logRotator>
