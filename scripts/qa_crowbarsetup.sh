@@ -2060,7 +2060,7 @@ function onadmin_allocate()
         fi
     done
     local controllernodes=(
-            $(get_all_discovered_nodes | head -n 2)
+            $(get_all_discovered_nodes | head -n 2 | tail -n 1)
         )
 
     controller_os="suse-11.3"
