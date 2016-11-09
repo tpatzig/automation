@@ -1201,16 +1201,16 @@ function onadmin_set_source_variables
             CLOUDLOCALREPOS="SUSE-Cloud-5-devel"
         ;;
         develcloud6)
-            CLOUDSLE12DISTPATH=/ibs/Devel:/Cloud:/6/images/iso
+            CLOUDSLE12DISTPATH=${cloud6_iso_path:='/ibs/Devel:/Cloud:/6/images/iso'}
             [ -n "$TESTHEAD" ] && CLOUDSLE12DISTPATH=/ibs/Devel:/Cloud:/6:/Staging/images/iso
-            CLOUDSLE12DISTISO="SUSE-OPENSTACK-CLOUD-6-$arch*Media1.iso"
+            CLOUDSLE12DISTISO=${cloud6_iso:="SUSE-OPENSTACK-CLOUD-6-$arch*Media1.iso"}
             CLOUDSLE12TESTISO="CLOUD-6-TESTING-$arch*Media1.iso"
             CLOUDLOCALREPOS="SUSE-OpenStack-Cloud-6-devel"
         ;;
         develcloud7)
-            CLOUDSLE12DISTPATH=/ibs/Devel:/Cloud:/7/images/iso
+            CLOUDSLE12DISTPATH=${cloud7_iso_path:='/ibs/Devel:/Cloud:/6/images/iso'}
             [ -n "$TESTHEAD" ] && CLOUDSLE12DISTPATH=/ibs/Devel:/Cloud:/7:/Staging/images/iso
-            CLOUDSLE12DISTISO="SUSE-OPENSTACK-CLOUD-7-${arch}-Media1.iso"
+            CLOUDSLE12DISTISO=${cloud7_iso:="SUSE-OPENSTACK-CLOUD-7-${arch}-Media1.iso"}
             CLOUDSLE12TESTISO="CLOUD-7-TESTING-${arch}-Media1.iso"
             CLOUDLOCALREPOS="SUSE-OpenStack-Cloud-7-devel"
         ;;
@@ -1310,12 +1310,12 @@ function onadmin_setup_local_zypper_repositories
             zypper ar $uri_base/SLES11-SP3-Updates/ sles11sp3up
         ;;
         6)
-            zypper ar $uri_base/SLES12-SP1-Pool/ sles12sp1
-            zypper ar $uri_base/SLES12-SP1-Updates/ sles12sp1up
+            zypper ar $uri_base/${repopath_sles12sp1}/ sles12sp1
+            zypper ar $uri_base/${repopath_sles12sp1up}/ sles12sp1up
         ;;
         7)
-            zypper ar $uri_base/$arch/SLES12-SP2-Pool/ sles12sp2
-            zypper ar $uri_base/$arch/SLES12-SP2-Updates/ sles12sp2up
+            zypper ar $uri_base/$arch/${repopath_sles12sp1}/ sles12sp2
+            zypper ar $uri_base/$arch/${repopath_sles12sp1up}/ sles12sp2up
         ;;
     esac
 }
