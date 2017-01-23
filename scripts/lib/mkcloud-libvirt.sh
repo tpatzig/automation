@@ -338,7 +338,7 @@ function libvirt_do_onhost_deploy_image()
     echo "Cloning $role node vdisk from $image ..."
     safely $sudo qemu-img convert -t none -O raw -S 0 -p $cachedir/$image $disk
 
-    if ${resize_admin_image:-true}; then 
+    if [[ ${resize_admin_node_partition:-1} = 1 ]]; then 
         # resize the last partition only if it has id 83
         local last_part=$(fdisk -l $disk | grep -c "^$disk")
         if fdisk -l $disk | grep -q "$last_part *\* *.*83 *Linux" ; then
