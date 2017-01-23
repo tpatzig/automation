@@ -3104,11 +3104,12 @@ function onadmin_proposal
         done
     fi
     local proposal
-    for proposal in nfs_client pacemaker database rabbitmq keystone swift \
-        ceph glance cinder neutron nova `horizon_barclamp` ceilometer heat \
-        manila trove barbican magnum sahara murano tempest; do
+    for proposal in nfs_client pacemaker database rabbitmq keystone \
+        glance cinder neutron nova `horizon_barclamp` \
+        tempest; do
         deploy_single_proposal $proposal
     done
+   #manila trove barbican magnum sahara murano tempest; do
 
     set_dashboard_alias
 }
@@ -3438,8 +3439,8 @@ function oncontroller_manila_generic_driver_setup()
         local service_image_name=manila-service-image.vhd
         local service_image_params="--disk-format vhd --property hypervisor_type=hyperv"
     else
-        local service_image_url=http://$clouddata/images/other/manila-service-image.qcow2
-        local service_image_name=manila-service-image.qcow2
+        local service_image_url=http://$clouddata/$manila_service_image_path/$manila_service_image_name_qcow
+        local service_image_name=$manila_service_image_name_qcow
         local service_image_params="--disk-format qcow2 --property hypervisor_type=kvm"
     fi
 
@@ -4975,6 +4976,33 @@ function onadmin_runlist
         local TIMEFORMAT="timing for qa_crowbarsetup function 'onadmin_$cmd' real=%R user=%U system=%S"
         time onadmin_$cmd || complain $? "$cmd failed with code $?"
     done
+}
+
+function onadmin_install_crowbar_sapcustom
+{
+    zypper --non-interactive --gpg-auto-import-keys ar http://repomaster.wdf.sap.corp:50000/repo/obs/SAP-Cloud:/CC:/testing/SLES12-SP1/ SAP-Cloud_CC_testing
+    zypper --non-interactive --gpg-auto-import-keys in crowbar-sapcustom-soc6
+    knife cookbook upload -o /opt/dell/chef/cookbooks wrapper-sapcustom
+    knife node run_list add `hostname -f` "recipe[wrapper-sapcustom]"
+    systemctl restart chef-client
+}
+
+function onadmin_crowbar_sapcustom
+{
+    local TIMEFORMAT="timing for qa_crowbarsetup function 'onadmin_install_crowbar_sapcustom' real=%R user=%U system=%S"
+    time onadmin_install_crowbar_sapcustom || complain $? "$cmd failed with code $?"
+}
+
+function onadmin_do_cloud_update
+{
+    zypper --non-interactive --gpg-auto-import-keys ar http://repo.wdf.sap.corp:50000/repo/SUSE/Updates/OpenStack-Cloud/6/x86_64/update/ Cloud-Update
+    zypper --non-interactive --gpg-auto-import-keys up -r Cloud-Update
+}
+
+function onadmin_cloud_update
+{
+    local TIMEFORMAT="timing for qa_crowbarsetup function 'onadmin_do_cloud_update' real=%R user=%U system=%S"
+    time onadmin_do_cloud_update || complain $? "$cmd failed with code $?"
 }
 
 #--
