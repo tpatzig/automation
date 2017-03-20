@@ -3273,7 +3273,6 @@ function onadmin_proposal
         manila trove barbican magnum sahara murano aodh tempest; do
         deploy_single_proposal $proposal
     done
-   #manila trove barbican magnum sahara murano tempest; do
 
     set_dashboard_alias
 }
